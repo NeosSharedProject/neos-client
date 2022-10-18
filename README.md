@@ -13,10 +13,10 @@ async function main() {
   console.log(await neos.getFriends());
 
   console.log(
-    await neos.SendTextMessage({ targetUserId: "U-Neos", message: "Hello" })
+    await neos.sendTextMessage({ targetUserId: "U-Neos", message: "Hello" })
   );
 
-  console.log(await neos.SendKFC({ targetUserId: "U-Neos", amount: 0.1 }));
+  console.log(await neos.sendKFC({ targetUserId: "U-Neos", amount: 0.1 }));
 
   console.log(await neos.getMessages({ targetUserId: "U-Neos" }));
 }

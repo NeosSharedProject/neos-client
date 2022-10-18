@@ -59,7 +59,7 @@ export default class Neos {
     return await getMessages({ credential: this.info.credential, userId });
   }
 
-  async SendTextMessage({
+  async sendTextMessage({
     targetUserId,
     message,
   }: {
@@ -77,7 +77,7 @@ export default class Neos {
     });
   }
 
-  async SendKFC({
+  async sendKFC({
     targetUserId,
     amount,
     comment,
