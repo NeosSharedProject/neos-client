@@ -41,23 +41,26 @@ export = class Neos {
     return await getFriends({ credential: this.info.credential });
   }
 
-  async addFriend(userId: string): Promise<any> {
+  async addFriend({ targetUserId }: { targetUserId: string }): Promise<any> {
     await this.checkSession();
     if (!isCredential(this.info.credential)) {
       throw new Error("credential error");
     }
     return await addFriend({
       credential: this.info.credential,
-      targetUserId: userId,
+      targetUserId,
     });
   }
 
-  async getMessages({ userId }: { userId?: string }): Promise<any> {
+  async getMessages({ targetUserId }: { targetUserId?: string }): Promise<any> {
     await this.checkSession();
     if (!isCredential(this.info.credential)) {
       throw new Error("credential error");
     }
-    return await getMessages({ credential: this.info.credential, userId });
+    return await getMessages({
+      credential: this.info.credential,
+      targetUserId,
+    });
   }
 
   async sendTextMessage({
@@ -99,11 +102,11 @@ export = class Neos {
     });
   }
 
-  async getUser({ userId }: { userId: string }) {
+  async getUser({ targetUserId }: { targetUserId: string }) {
     await this.checkSession();
     if (!isCredential(this.info.credential)) {
       throw new Error("credential error");
     }
-    return getUser({ credential: this.info.credential, userId });
+    return getUser({ credential: this.info.credential, targetUserId });
   }
 };

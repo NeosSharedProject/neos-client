@@ -9,14 +9,14 @@ import {
 
 export async function getMessages({
   credential,
-  userId,
+  targetUserId,
 }: {
   credential: Credential;
-  userId?: string;
+  targetUserId?: string;
 }) {
   const res = await get(
     `${BASE_URL}api/users/${credential.userId}/messages?${
-      userId ? `user=${userId}&` : ""
+      targetUserId ? `user=${targetUserId}&` : ""
     }`,
     getAuthHeader(credential)
   );
