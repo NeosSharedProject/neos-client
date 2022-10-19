@@ -1,6 +1,6 @@
 {
   "name": "neos-client",
-  "version": "0.2.1",
+  "version": "0.3.0",
   "description": "A simple client that uses the Neos API",
   "main": "dist/neos/index.js",
   "types": "dist/neos/index.d.js",
