@@ -1,9 +1,10 @@
 import { getFriends, addFriend } from "./api/friends";
 import { getMessages, sendTextMessage, sendKFC } from "./api/messages";
 import { login } from "./api/session";
+import { getUser } from "./api/user";
 import { Credential, isCredential, uuidv4 } from "./common";
 
-export default class Neos {
+export = class Neos {
   info: {
     username: string;
     password: string;
@@ -97,4 +98,12 @@ export default class Neos {
       comment,
     });
   }
-}
+
+  async getUser({ userId }: { userId: string }) {
+    await this.checkSession();
+    if (!isCredential(this.info.credential)) {
+      throw new Error("credential error");
+    }
+    return getUser({ credential: this.info.credential, userId });
+  }
+};
