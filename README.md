@@ -19,7 +19,7 @@ async function main() {
   // console.log(await neos.addFriend("U-***"));
   // console.log(await neos.sendKFC({ targetUserId: "U-***", amount: 0.1 }));
 
-  console.log(await neos.getMessages({ userId: "U-Neos" }));
+  console.log(await neos.getMessages({ targetUserId: "U-Neos" }));
 }
 
 main();
@@ -40,7 +40,7 @@ async function main() {
   // console.log(await neos.addFriend("U-***"));
   // console.log(await neos.sendKFC({ targetUserId: "U-***", amount: 0.1 }));
 
-  console.log(await neos.getMessages({ userId: "U-Neos" }));
+  console.log(await neos.getMessages({ targetUserId: "U-Neos" }));
 }
 
 main();
