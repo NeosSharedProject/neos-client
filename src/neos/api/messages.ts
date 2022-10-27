@@ -11,13 +11,19 @@ import {
 export async function getMessages({
   credential,
   targetUserId,
+  unReadOnly = false,
+  fromTime,
 }: {
   credential: Credential;
   targetUserId?: string;
+  unReadOnly?: boolean;
+  fromTime?: Date;
 }) {
   const res = await get(
     `${BASE_URL}api/users/${credential.userId}/messages?${
       targetUserId ? `user=${targetUserId}&` : ""
+    }${unReadOnly ? "unread=true&" : ""}${
+      fromTime ? `fromTime=${fromTime?.toUTCString()}&` : ""
     }`,
     getAuthHeader(credential)
   );

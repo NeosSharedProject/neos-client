@@ -57,7 +57,15 @@ export = class Neos {
     });
   }
 
-  async getMessages({ targetUserId }: { targetUserId?: string }): Promise<any> {
+  async getMessages({
+    targetUserId,
+    unReadOnly,
+    fromTime,
+  }: {
+    targetUserId?: string;
+    unReadOnly?: boolean;
+    fromTime?: Date;
+  }): Promise<any> {
     await this.checkSession();
     if (!isCredential(this.info.credential)) {
       throw new Error("credential error");
@@ -65,6 +73,8 @@ export = class Neos {
     return await getMessages({
       credential: this.info.credential,
       targetUserId,
+      unReadOnly,
+      fromTime,
     });
   }
 
