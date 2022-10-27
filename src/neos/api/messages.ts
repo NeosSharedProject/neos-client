@@ -5,6 +5,7 @@ import {
   getAuthHeader,
   Credential,
   uuidv4,
+  patch,
 } from "../common";
 
 export async function getMessages({
@@ -45,6 +46,20 @@ export async function sendTextMessage({
       readTime: null,
       ownerId: credential.userId,
     },
+    getAuthHeader(credential)
+  );
+}
+
+export async function markMessageRead({
+  messageIds,
+  credential,
+}: {
+  messageIds: string[];
+  credential: Credential;
+}) {
+  return await patch(
+    `${BASE_URL}api/users/${credential.userId}/messages/`,
+    messageIds,
     getAuthHeader(credential)
   );
 }

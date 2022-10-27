@@ -34,5 +34,6 @@ export function getAuthHeader(credential: Credential) {
 export const post = axios.post;
 export const get = axios.get;
 export const put = axios.put;
+export const patch = axios.patch;
 
 export const uuidv4 = v4;
