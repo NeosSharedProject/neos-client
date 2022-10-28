@@ -1,6 +1,6 @@
 import { BASE_URL, post, Credential } from "../common";
 
-type LoginInput =
+export type LoginInput =
   | {
       ownerId: string;
       password: string;
@@ -18,6 +18,10 @@ type LoginInput =
       password: string;
       rememberMe?: boolean;
       secretMachineId?: string;
+    }
+  | {
+      sessionToken: string;
+      secretMachineId: string;
     };
 
 export async function login(loginInput: LoginInput): Promise<Credential> {

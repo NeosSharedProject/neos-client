@@ -5,28 +5,24 @@ import {
   sendKFC,
   markMessageRead,
 } from "./api/messages";
-import { login } from "./api/session";
+import { login, LoginInput } from "./api/session";
 import { getUser } from "./api/user";
 import { Credential, isCredential, uuidv4 } from "./common";
 
 export = class Neos {
   info: {
-    username: string;
-    password: string;
-    secretMachineId: string;
+    login: LoginInput;
     credential?: Credential;
   };
 
-  constructor(username: string, password: string) {
-    this.info = { username, password, secretMachineId: uuidv4() };
+  constructor(login: LoginInput) {
+    this.info = {
+      login: { secretMachineId: uuidv4().replace(/-/g, ""), ...login },
+    };
   }
 
   async login(): Promise<void> {
-    this.info.credential = await login({
-      username: this.info.username,
-      password: this.info.password,
-      secretMachineId: this.info.secretMachineId,
-    });
+    this.info.credential = await login(this.info.login);
   }
 
   async checkSession(): Promise<void> {
