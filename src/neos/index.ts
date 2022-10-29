@@ -13,7 +13,7 @@ import WebSocket from "ws";
 
 export type LoginCredential = LoginInput & { secretMachineId: string };
 
-export = class Neos {
+export class Neos {
   info: {
     login: LoginCredential;
     credential?: Credential;
@@ -153,4 +153,4 @@ export = class Neos {
     }
     return getUser({ credential: this.info.credential, targetUserId });
   }
-};
+}
