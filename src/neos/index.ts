@@ -1,4 +1,5 @@
 import { getFriends, addFriend } from "./api/friends";
+import { connectHub } from "./api/hub";
 import {
   getMessages,
   sendTextMessage,
@@ -8,12 +9,17 @@ import {
 import { login, LoginInput } from "./api/session";
 import { getUser } from "./api/user";
 import { Credential, isCredential, uuidv4 } from "./common";
+import WebSocket from "ws";
+
+export type LoginCredential = LoginInput & { secretMachineId: string };
 
 export = class Neos {
   info: {
-    login: LoginInput;
+    login: LoginCredential;
     credential?: Credential;
   };
+  wss: WebSocket | undefined;
+  eventCallback: ((data: any) => any) | undefined;
 
   constructor(login: LoginInput) {
     this.info = {
@@ -23,6 +29,15 @@ export = class Neos {
 
   async login(): Promise<void> {
     this.info.credential = await login(this.info.login);
+    this.wss = await connectHub(this.info.credential);
+    this.wss.on("message", (buffer) => {
+      try {
+        const data = JSON.parse(buffer.toString().replace("", ""));
+        if (this.eventCallback && data?.type && data.type !== 6) {
+          this.eventCallback(data);
+        }
+      } catch (e) {}
+    });
   }
 
   async checkSession(): Promise<void> {
@@ -51,6 +66,13 @@ export = class Neos {
       credential: this.info.credential,
       targetUserId,
     });
+  }
+
+  async setEventCallback(callback: (...any: any[]) => any) {
+    if (!this.wss) {
+      await this.login();
+    }
+    this.eventCallback = callback;
   }
 
   async getMessages({
