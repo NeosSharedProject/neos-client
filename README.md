@@ -5,7 +5,7 @@ Neos の API を使うためのシンプルなクライアントです。
 > npm i neos-client
 
 ```js
-const Neos = require("neos-client");
+const { Neos } = require("neos-client");
 
 async function main() {
   const neos = new Neos("username", "password");
