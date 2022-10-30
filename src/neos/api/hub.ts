@@ -1,5 +1,5 @@
 import { Credential, getAuthHeader, post } from "../common";
-import WebSocket from "ws";
+import { io, Socket } from "socket.io-client";
 
 export async function negotiateHub(credential: Credential): Promise<{
   negotiateVersion: number;
@@ -16,15 +16,39 @@ export async function negotiateHub(credential: Credential): Promise<{
   ).data;
 }
 
-export async function connectHub(credential: Credential): Promise<WebSocket> {
+export async function connectHub(
+  credential: Credential,
+  eventCallback: (data: any) => any
+): Promise<Socket> {
   const data = await negotiateHub(credential);
-  const wss = new WebSocket(
-    data.url.replace("https", "wss") + `&access_token=${data.accessToken}`
-  );
+  const url =
+    data.url.replace("https", "wss") + `&access_token=${data.accessToken}`;
+  console.log(url);
+  const wss = io(url, { autoConnect: true });
 
-  wss.on("open", () => {
-    wss.send(`{"protocol":"json", "version":1}`);
+  wss.connect();
+
+  wss.on("error", (err) => {
+    console.error(err);
   });
+  wss.on("open", () => {
+    console.log("connect");
+    wss.emit("sendMessage", `{"protocol":"json", "version":1}`);
+  });
+  wss.on("receiveMessage", (data) => {
+    console.log(data);
+    // if (message.type === "utf8") {
+    //   try {
+    //     const data = JSON.parse(message.utf8Data.replace("", ""));
+    //     if (data.type && data.type !== 6) {
+    //       eventCallback(data);
+    //     }
+    //   } catch (e) {
+    //     console.error(e);
+    //   }
+    // }
+  });
+  console.log(wss);
 
   return wss;
 }
