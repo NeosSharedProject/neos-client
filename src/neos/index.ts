@@ -6,7 +6,7 @@ import {
   sendKFC,
   markMessageRead,
 } from "./api/messages";
-import { login, LoginInput } from "./api/session";
+import { login, LoginInput } from "./api/userSessions";
 import { getUser } from "./api/user";
 import { Credential, isCredential, uuidv4 } from "./common";
 import { HubConnection } from "@microsoft/signalr";
