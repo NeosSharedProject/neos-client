@@ -1,5 +1,9 @@
 import { Credential, getAuthHeader, post } from "../common";
-import WebSocket from "ws";
+import {
+  HubConnectionBuilder,
+  HubConnection,
+  HttpTransportType,
+} from "@microsoft/signalr";
 
 export async function negotiateHub(credential: Credential): Promise<{
   negotiateVersion: number;
@@ -16,15 +20,29 @@ export async function negotiateHub(credential: Credential): Promise<{
   ).data;
 }
 
-export async function connectHub(credential: Credential): Promise<WebSocket> {
+export async function connectHub(
+  credential: Credential,
+  eventCallbacks: {
+    methodName: "ReceiveMessage";
+    callback: (data: any) => any;
+  }[]
+): Promise<HubConnection> {
   const data = await negotiateHub(credential);
-  const wss = new WebSocket(
-    data.url.replace("https", "wss") + `&access_token=${data.accessToken}`
-  );
 
-  wss.on("open", () => {
-    wss.send(`{"protocol":"json", "version":1}`);
+  const connection = new HubConnectionBuilder()
+    .withUrl(data.url + `&access_token=${data.accessToken}`, {
+      skipNegotiation: true,
+      transport: HttpTransportType.WebSockets,
+    })
+    .build();
+
+  eventCallbacks.forEach(({ methodName, callback }) => {
+    connection.on(methodName, (data) => {
+      callback(data);
+    });
   });
 
-  return wss;
+  connection.start();
+
+  return connection;
 }

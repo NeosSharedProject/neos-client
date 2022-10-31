@@ -6,10 +6,10 @@ import {
   sendKFC,
   markMessageRead,
 } from "./api/messages";
-import { login, LoginInput } from "./api/session";
+import { login, LoginInput } from "./api/userSessions";
 import { getUser } from "./api/user";
 import { Credential, isCredential, uuidv4 } from "./common";
-import WebSocket from "ws";
+import { HubConnection } from "@microsoft/signalr";
 
 export type LoginCredential = LoginInput & { secretMachineId: string };
 
@@ -18,8 +18,20 @@ export class Neos {
     login: LoginCredential;
     credential?: Credential;
   };
-  wss: WebSocket | undefined;
-  eventCallback: ((data: any) => any) | undefined;
+  wss: HubConnection | undefined;
+  eventCallbacks: {
+    messageReceived?: (message: {
+      id: string;
+      ownerId: string;
+      recipientId: string;
+      senderId: string;
+      messageType: "Text" | "Object";
+      content: string;
+      sendTime: string;
+      lastUpdateTime: string;
+      readTime: string | null;
+    }) => any;
+  } = {};
 
   constructor(login: LoginInput) {
     this.info = {
@@ -29,15 +41,16 @@ export class Neos {
 
   async login(): Promise<void> {
     this.info.credential = await login(this.info.login);
-    this.wss = await connectHub(this.info.credential);
-    this.wss.on("message", (buffer) => {
-      try {
-        const data = JSON.parse(buffer.toString().replace("", ""));
-        if (this.eventCallback && data?.type && data.type !== 6) {
-          this.eventCallback(data);
-        }
-      } catch (e) {}
-    });
+    this.wss = await connectHub(this.info.credential, [
+      {
+        methodName: "ReceiveMessage",
+        callback: (data) => {
+          if (this.eventCallbacks.messageReceived) {
+            this.eventCallbacks.messageReceived(data);
+          }
+        },
+      },
+    ]);
   }
 
   async checkSession(): Promise<void> {
@@ -68,11 +81,18 @@ export class Neos {
     });
   }
 
-  async setEventCallback(callback: (...any: any[]) => any) {
+  async setEventCallback(
+    type: "messageReceived",
+    callback: (...any: any[]) => any
+  ) {
     if (!this.wss) {
       await this.login();
     }
-    this.eventCallback = callback;
+    switch (type) {
+      case "messageReceived":
+        this.eventCallbacks.messageReceived = callback;
+        break;
+    }
   }
 
   async getMessages({
