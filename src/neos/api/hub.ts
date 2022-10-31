@@ -1,5 +1,9 @@
 import { Credential, getAuthHeader, post } from "../common";
-import { io, Socket } from "socket.io-client";
+import {
+  HubConnectionBuilder,
+  HubConnection,
+  HttpTransportType,
+} from "@microsoft/signalr";
 
 export async function negotiateHub(credential: Credential): Promise<{
   negotiateVersion: number;
@@ -18,37 +22,27 @@ export async function negotiateHub(credential: Credential): Promise<{
 
 export async function connectHub(
   credential: Credential,
-  eventCallback: (data: any) => any
-): Promise<Socket> {
+  eventCallbacks: {
+    methodName: "ReceiveMessage";
+    callback: (data: any) => any;
+  }[]
+): Promise<HubConnection> {
   const data = await negotiateHub(credential);
-  const url =
-    data.url.replace("https", "wss") + `&access_token=${data.accessToken}`;
-  console.log(url);
-  const wss = io(url, { autoConnect: true });
 
-  wss.connect();
+  const connection = new HubConnectionBuilder()
+    .withUrl(data.url + `&access_token=${data.accessToken}`, {
+      skipNegotiation: true,
+      transport: HttpTransportType.WebSockets,
+    })
+    .build();
 
-  wss.on("error", (err) => {
-    console.error(err);
+  eventCallbacks.forEach(({ methodName, callback }) => {
+    connection.on(methodName, (data) => {
+      callback(data);
+    });
   });
-  wss.on("open", () => {
-    console.log("connect");
-    wss.emit("sendMessage", `{"protocol":"json", "version":1}`);
-  });
-  wss.on("receiveMessage", (data) => {
-    console.log(data);
-    // if (message.type === "utf8") {
-    //   try {
-    //     const data = JSON.parse(message.utf8Data.replace("", ""));
-    //     if (data.type && data.type !== 6) {
-    //       eventCallback(data);
-    //     }
-    //   } catch (e) {
-    //     console.error(e);
-    //   }
-    // }
-  });
-  console.log(wss);
 
-  return wss;
+  connection.start();
+
+  return connection;
 }

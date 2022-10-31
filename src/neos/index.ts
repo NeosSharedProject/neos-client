@@ -9,7 +9,7 @@ import {
 import { login, LoginInput } from "./api/session";
 import { getUser } from "./api/user";
 import { Credential, isCredential, uuidv4 } from "./common";
-import { Socket } from "socket.io-client";
+import { HubConnection } from "@microsoft/signalr";
 
 export type LoginCredential = LoginInput & { secretMachineId: string };
 
@@ -18,7 +18,7 @@ export class Neos {
     login: LoginCredential;
     credential?: Credential;
   };
-  wss: Socket | undefined;
+  wss: HubConnection | undefined;
   eventCallbacks: {
     messageReceived?: (message: {
       id: string;
@@ -41,17 +41,16 @@ export class Neos {
 
   async login(): Promise<void> {
     this.info.credential = await login(this.info.login);
-    this.wss = await connectHub(this.info.credential, (data) => {
-      switch (data.type) {
-        case 1:
-          data.arguments.forEach((message: any) => {
-            if (this.eventCallbacks.messageReceived) {
-              this.eventCallbacks.messageReceived(message);
-            }
-          });
-          break;
-      }
-    });
+    this.wss = await connectHub(this.info.credential, [
+      {
+        methodName: "ReceiveMessage",
+        callback: (data) => {
+          if (this.eventCallbacks.messageReceived) {
+            this.eventCallbacks.messageReceived(data);
+          }
+        },
+      },
+    ]);
   }
 
   async checkSession(): Promise<void> {
