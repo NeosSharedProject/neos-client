@@ -1,15 +1,18 @@
-import { BASE_URL, get, Credential, getAuthHeader } from "../common";
+import { BASE_URL, get } from "../common";
+import { NeosUserType } from "../type/user";
+import { NeosUserSessionType } from "../type/userSession";
+import { getAuthHeader } from "../util/userSession";
 
 export async function getUser({
-  credential,
+  userSession,
   targetUserId,
 }: {
-  credential?: Credential;
+  userSession?: NeosUserSessionType;
   targetUserId: string;
-}) {
+}): Promise<NeosUserType> {
   const response = await get(
     `${BASE_URL}api/users/${targetUserId}`,
-    credential ? getAuthHeader(credential) : {}
+    userSession ? { headers: getAuthHeader(userSession) } : {}
   );
   return response.data;
 }

@@ -1,84 +1,79 @@
-import {
-  BASE_URL,
-  get,
-  post,
-  getAuthHeader,
-  Credential,
-  uuidv4,
-  patch,
-} from "../common";
-import { NeosMessageType } from "../type/message";
+import { BASE_URL, get, post, uuidv4, patch } from "../common";
+import { NeosMessageIdType, NeosUserIdType } from "../type/id";
+import { MessageType, NeosMessageType, TextMessageType } from "../type/message";
+import { NeosUserSessionType } from "../type/userSession";
 import { parseNeosMessage } from "../util/message";
+import { getAuthHeader } from "../util/userSession";
 
 export async function getMessages({
-  credential,
+  userSession,
   targetUserId,
   unReadOnly = false,
   fromTime,
 }: {
-  credential: Credential;
-  targetUserId?: string;
+  userSession: NeosUserSessionType;
+  targetUserId?: NeosUserIdType;
   unReadOnly?: boolean;
   fromTime?: Date;
-}) {
+}): Promise<MessageType[]> {
   const res = await get(
-    `${BASE_URL}api/users/${credential.userId}/messages?${
+    `${BASE_URL}api/users/${userSession.userId}/messages?${
       targetUserId ? `user=${targetUserId}&` : ""
     }${unReadOnly ? "unread=true&" : ""}${
       fromTime ? `fromTime=${fromTime?.toUTCString()}&` : ""
     }`,
-    getAuthHeader(credential)
+    { headers: getAuthHeader(userSession) }
   );
   return res.data.map((message: NeosMessageType) => parseNeosMessage(message));
 }
 
 export async function sendTextMessage({
-  credential,
+  userSession,
   targetUserId,
   message,
 }: {
-  credential: Credential;
-  targetUserId: string;
+  userSession: NeosUserSessionType;
+  targetUserId: NeosUserIdType;
   message: string;
-}) {
-  return await post(
-    `${BASE_URL}api/users/${targetUserId}/messages`,
-    {
-      id: `MSG-${uuidv4()}`,
-      senderId: credential.userId,
-      recipientId: targetUserId,
-      messageType: "Text",
-      content: message,
-      sendTime: new Date().toISOString(),
-      lastUpdateTime: new Date().toISOString(),
-      readTime: null,
-      ownerId: credential.userId,
-    },
-    getAuthHeader(credential)
-  );
+}): Promise<TextMessageType> {
+  const body: TextMessageType = {
+    id: `MSG-${uuidv4()}`,
+    senderId: userSession.userId,
+    recipientId: targetUserId,
+    messageType: "Text",
+    content: message,
+    sendTime: new Date().toISOString(),
+    lastUpdateTime: new Date().toISOString(),
+    readTime: null,
+    ownerId: userSession.userId,
+  };
+  await post(`${BASE_URL}api/users/${targetUserId}/messages`, body, {
+    headers: getAuthHeader(userSession),
+  });
+  return body;
 }
 
 export async function markMessageRead({
   messageIds,
-  credential,
+  userSession,
 }: {
   messageIds: string[];
-  credential: Credential;
+  userSession: NeosUserSessionType;
 }) {
   return await patch(
-    `${BASE_URL}api/users/${credential.userId}/messages/`,
+    `${BASE_URL}api/users/${userSession.userId}/messages/`,
     messageIds,
-    getAuthHeader(credential)
+    { headers: getAuthHeader(userSession) }
   );
 }
 
 export async function sendKFC({
-  credential,
+  userSession,
   targetUserId,
   amount,
   comment,
 }: {
-  credential: Credential;
+  userSession: NeosUserSessionType;
   targetUserId: string;
   amount: number;
   comment?: string;
@@ -87,13 +82,13 @@ export async function sendKFC({
     `${BASE_URL}api/transactions/KFC`,
     {
       token: "KFC",
-      fromUserId: credential.userId,
+      fromUserId: userSession.userId,
       toUserId: targetUserId,
       amount,
       comment,
       transactionType: "User2User",
       anonymous: false,
     },
-    getAuthHeader(credential)
+    { headers: getAuthHeader(userSession) }
   );
 }

@@ -6,85 +6,183 @@ import {
   sendKFC,
   markMessageRead,
 } from "./api/messages";
-import { login, LoginInput } from "./api/userSessions";
+import { deleteUserSession, postUserSession } from "./api/userSessions";
 import { getUser } from "./api/users";
-import { Credential, isCredential, uuidv4 } from "./common";
+import { uuidv4 } from "./common";
 import { HubConnection } from "@microsoft/signalr";
 import { MessageType } from "./type/message";
+import {
+  NeosLoginCredentialType,
+  NeosUserSessionType,
+} from "./type/userSession";
+import { NeosFriendType } from "./type/friend";
+import { NeosMessageIdType, NeosUserIdType } from "./type/id";
+import {
+  MessagesReadEventArgumentType,
+  ReceiveMessageEventArgumentType,
+} from "./type/hub";
 
-export type LoginCredential = LoginInput & { secretMachineId: string };
+export type NeosClientOption = {
+  saveLoginCredential: boolean;
+  useEvents: boolean;
+  autoSync: { messages: boolean };
+};
 
 export class Neos {
-  info: {
-    login: LoginCredential;
-    credential?: Credential;
+  loginCredential: NeosLoginCredentialType & {
+    secretMachineId: string;
+    rememberMe: true;
   };
-  wss: HubConnection | undefined;
+  option: Readonly<NeosClientOption>;
+  userSession?: NeosUserSessionType;
+  hubConnection?: HubConnection;
   eventCallbacks: {
-    messageReceived?: (message: MessageType) => any;
+    messageReceived?: (message: ReceiveMessageEventArgumentType) => any;
+    messageRead?: (data: MessagesReadEventArgumentType) => any;
+    messageSend?: (message: MessageType) => any;
   } = {};
+  messages?: MessageType[];
 
-  constructor(login: LoginInput) {
-    this.info = {
-      login: {
-        secretMachineId: uuidv4().replace(/-/g, "").substring(0, 21),
-        ...login,
-      },
+  constructor(login: NeosLoginCredentialType, option?: NeosClientOption) {
+    this.loginCredential = {
+      secretMachineId: uuidv4(),
+      ...login,
+      rememberMe: true,
+    };
+    this.option = option ?? {
+      saveLoginCredential: false,
+      useEvents: true,
+      autoSync: { messages: true },
     };
   }
 
+  private addMessage(message: MessageType) {
+    console.log(message);
+    if (this.messages) {
+      this.messages = [...this.messages, message];
+      if (this.eventCallbacks.messageSend) {
+        this.eventCallbacks.messageSend(message);
+      }
+    }
+  }
+
+  private readMessage(data: MessagesReadEventArgumentType) {
+    if (this.messages) {
+      const newMessages = this.messages
+        .filter((msg) => data.ids.some((id) => id === msg.id))
+        .map((msg) => ({ ...msg, readTime: data.readTime }));
+      this.messages = [
+        ...this.messages.filter((msg) => data.ids.some((id) => id !== msg.id)),
+        ...newMessages,
+      ];
+    }
+  }
+
   async login(): Promise<void> {
-    this.info.credential = await login(this.info.login);
-    this.wss = await connectHub(this.info.credential, [
-      {
-        methodName: "ReceiveMessage",
-        callback: (data) => {
-          if (this.eventCallbacks.messageReceived) {
-            this.eventCallbacks.messageReceived(data);
-          }
-        },
-      },
-    ]);
+    try {
+      this.userSession = await postUserSession({
+        loginCredential: this.loginCredential,
+      });
+      if (!this.option.saveLoginCredential) {
+        this.loginCredential = {
+          ownerId: this.userSession.userId,
+          sessionCode: this.userSession.token,
+          secretMachineId: this.userSession.secretMachineId,
+          rememberMe: true,
+        };
+      }
+      if (!this.messages && this.option.autoSync.messages) {
+        this.messages = await getMessages({ userSession: this.userSession });
+      }
+      if (!this.hubConnection) {
+        this.hubConnection = await connectHub({
+          userSession: this.userSession,
+          eventCallbacks: [
+            {
+              methodName: "ReceiveMessage",
+              callback: (message) => {
+                this.addMessage(message);
+                if (this.eventCallbacks.messageReceived) {
+                  this.eventCallbacks.messageReceived(message);
+                }
+              },
+            },
+            {
+              methodName: "MessagesRead",
+              callback: (data) => {
+                console.log(data);
+                this.readMessage(data);
+                if (this.eventCallbacks.messageRead) {
+                  this.eventCallbacks.messageRead(data);
+                }
+              },
+            },
+          ],
+        });
+      }
+    } catch (e) {
+      this.userSession = undefined;
+      throw new Error("login error");
+    }
+  }
+
+  async logout(): Promise<void> {
+    if (this.userSession) {
+      await deleteUserSession({ userSession: this.userSession });
+    }
+    if (this.hubConnection) {
+      this.hubConnection.stop();
+      this.hubConnection = undefined;
+    }
   }
 
   async checkSession(): Promise<void> {
-    if (
-      !isCredential(this.info.credential) ||
-      new Date(this.info.credential.expire) < new Date()
-    ) {
+    if (!this.userSession || new Date(this.userSession.expire) < new Date()) {
       await this.login();
     }
   }
 
-  async getFriends(): Promise<any> {
+  async getFriends(): Promise<NeosFriendType[]> {
     await this.checkSession();
-    if (!isCredential(this.info.credential)) {
-      throw new Error("credential error");
+    if (!this.userSession) {
+      throw new Error("userSession error");
     }
-    return await getFriends({ credential: this.info.credential });
+    return await getFriends({ userSession: this.userSession });
   }
 
   async addFriend({ targetUserId }: { targetUserId: string }): Promise<any> {
     await this.checkSession();
-    if (!isCredential(this.info.credential)) {
-      throw new Error("credential error");
+    if (!this.userSession) {
+      throw new Error("userSession error");
     }
     return await addFriend({
-      credential: this.info.credential,
+      userSession: this.userSession,
       targetUserId,
     });
   }
 
-  async setEventCallback(
-    type: "messageReceived",
-    callback: (...any: any[]) => any
-  ) {
-    if (!this.wss) {
-      await this.login();
-    }
+  async setEventCallback({
+    type,
+    callback,
+  }:
+    | {
+        type: "messageReceived";
+        callback: (data: ReceiveMessageEventArgumentType) => any;
+      }
+    | { type: "messageSend"; callback: (data: MessageType) => any }
+    | {
+        type: "messageRead";
+        callback: (data: MessagesReadEventArgumentType) => any;
+      }) {
     switch (type) {
       case "messageReceived":
         this.eventCallbacks.messageReceived = callback;
+        break;
+      case "messageSend":
+        this.eventCallbacks.messageSend = callback;
+        break;
+      case "messageRead":
+        this.eventCallbacks.messageRead = callback;
         break;
     }
   }
@@ -94,16 +192,16 @@ export class Neos {
     unReadOnly,
     fromTime,
   }: {
-    targetUserId?: string;
+    targetUserId?: NeosUserIdType;
     unReadOnly?: boolean;
     fromTime?: Date;
-  }): Promise<any> {
+  }): Promise<MessageType[]> {
     await this.checkSession();
-    if (!isCredential(this.info.credential)) {
-      throw new Error("credential error");
+    if (!this.userSession) {
+      throw new Error("userSession error");
     }
     return await getMessages({
-      credential: this.info.credential,
+      userSession: this.userSession,
       targetUserId,
       unReadOnly,
       fromTime,
@@ -114,28 +212,33 @@ export class Neos {
     targetUserId,
     message,
   }: {
-    targetUserId: string;
+    targetUserId: NeosUserIdType;
     message: string;
-  }): Promise<any> {
+  }): Promise<MessageType> {
     await this.checkSession();
-    if (!isCredential(this.info.credential)) {
-      throw new Error("credential error");
+    if (!this.userSession) {
+      throw new Error("userSession error");
     }
-    return await sendTextMessage({
-      credential: this.info.credential,
+
+    const body = await sendTextMessage({
+      userSession: this.userSession,
       targetUserId,
       message,
     });
+    if (this.option.autoSync.messages && this.messages) {
+      await this.addMessage(body);
+    }
+    return body;
   }
 
   async markMessageRead({ messageIds }: { messageIds: string[] }) {
     await this.checkSession();
-    if (!isCredential(this.info.credential)) {
-      throw new Error("credential error");
+    if (!this.userSession) {
+      throw new Error("userSession error");
     }
     return await markMessageRead({
       messageIds,
-      credential: this.info.credential,
+      userSession: this.userSession,
     });
   }
 
@@ -149,11 +252,11 @@ export class Neos {
     comment?: string;
   }): Promise<any> {
     await this.checkSession();
-    if (!isCredential(this.info.credential)) {
-      throw new Error("credential error");
+    if (!this.userSession) {
+      throw new Error("userSession error");
     }
     return await sendKFC({
-      credential: this.info.credential,
+      userSession: this.userSession,
       targetUserId,
       amount,
       comment,
@@ -162,9 +265,9 @@ export class Neos {
 
   async getUser({ targetUserId }: { targetUserId: string }) {
     await this.checkSession();
-    if (!isCredential(this.info.credential)) {
-      throw new Error("credential error");
+    if (!this.userSession) {
+      throw new Error("userSession error");
     }
-    return getUser({ credential: this.info.credential, targetUserId });
+    return getUser({ userSession: this.userSession, targetUserId });
   }
 }

@@ -1,33 +1,31 @@
-import { BASE_URL, post, Credential } from "../common";
+import { BASE_URL, httpDelete, post } from "../common";
+import {
+  NeosLoginCredentialType,
+  NeosUserSessionType,
+} from "../type/userSession";
+import { getAuthHeader } from "../util/userSession";
 
-export type LoginInput =
-  | {
-      ownerId: string;
-      password: string;
-      rememberMe?: boolean;
-      secretMachineId?: string;
-    }
-  | {
-      username: string;
-      password: string;
-      rememberMe?: boolean;
-      secretMachineId?: string;
-    }
-  | {
-      email: string;
-      password: string;
-      rememberMe?: boolean;
-      secretMachineId?: string;
-    }
-  | {
-      sessionToken: string;
-      secretMachineId: string;
-    };
-
-export async function login(loginInput: LoginInput): Promise<Credential> {
-  const response = await post(`${BASE_URL}api/userSessions`, loginInput);
+export async function postUserSession({
+  loginCredential,
+}: {
+  loginCredential: NeosLoginCredentialType;
+}): Promise<NeosUserSessionType> {
+  const response = await post(`${BASE_URL}api/userSessions`, loginCredential);
   if (response.status !== 200) {
-    throw new Error("login error");
+    throw new Error("postUserSession error");
   }
   return response.data;
+}
+
+export async function deleteUserSession({
+  userSession,
+}: {
+  userSession: NeosUserSessionType;
+}) {
+  await httpDelete(
+    `${BASE_URL}api/userSessions/${userSession.userId}/${userSession.token}`,
+    {
+      headers: getAuthHeader(userSession),
+    }
+  );
 }

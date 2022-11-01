@@ -1,35 +1,43 @@
-import { Credential, getAuthHeader, post } from "../common";
 import {
   HubConnectionBuilder,
   HubConnection,
   HttpTransportType,
 } from "@microsoft/signalr";
-import { MessageType, NeosMessageType } from "../type/message";
+import { post } from "../common";
+import { NeosUserSessionType } from "../type/userSession";
 import { parseNeosMessage } from "../util/message";
+import { getAuthHeader } from "../util/userSession";
+import { EventCallbackListType } from "../type/hub";
 
-export async function negotiateHub(credential: Credential): Promise<{
+export type NeosHubNegotiation = {
   negotiateVersion: number;
   url: string;
   accessToken: string;
   availableTransports: any[];
-}> {
+};
+
+export async function negotiateHub({
+  userSession,
+}: {
+  userSession: NeosUserSessionType;
+}): Promise<NeosHubNegotiation> {
   return (
     await post(
       "https://api.neos.com/hub/negotiate",
       {},
-      getAuthHeader(credential)
+      { headers: getAuthHeader(userSession) }
     )
   ).data;
 }
 
-export async function connectHub(
-  credential: Credential,
-  eventCallbacks: {
-    methodName: "ReceiveMessage";
-    callback: (data: MessageType) => any;
-  }[]
-): Promise<HubConnection> {
-  const data = await negotiateHub(credential);
+export async function connectHub({
+  userSession,
+  eventCallbacks,
+}: {
+  userSession: NeosUserSessionType;
+  eventCallbacks: EventCallbackListType;
+}): Promise<HubConnection> {
+  const data = await negotiateHub({ userSession });
 
   const connection = new HubConnectionBuilder()
     .withUrl(data.url + `&access_token=${data.accessToken}`, {
@@ -39,8 +47,15 @@ export async function connectHub(
     .build();
 
   eventCallbacks.forEach(({ methodName, callback }) => {
-    connection.on(methodName, (message: NeosMessageType) => {
-      callback(parseNeosMessage(message));
+    connection.on(methodName, (data: any) => {
+      switch (methodName) {
+        case "ReceiveMessage":
+          callback(parseNeosMessage(data));
+          break;
+        case "MessagesRead":
+          callback(data);
+          break;
+      }
     });
   });
 

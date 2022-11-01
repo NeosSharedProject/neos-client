@@ -1,4 +1,4 @@
-import { NeosDateStringType } from "./common";
+import { NeosDateStringType, NeosUriType } from "./common";
 import {
   NeosMachineIdType,
   NeosMessageIdType,
@@ -7,7 +7,6 @@ import {
   NeosSessionIdType,
   NeosUserIdType,
 } from "./id";
-import { NeosUriType } from "./uri";
 
 export type NeosTextMessageType = {
   id: NeosMessageIdType;

@@ -1,24 +1,35 @@
-import { BASE_URL, get, Credential, getAuthHeader, put } from "../common";
+import { BASE_URL, get, put } from "../common";
+import { NeosFriendType } from "../type/friend";
+import { NeosUserSessionType } from "../type/userSession";
+import { getAuthHeader } from "../util/userSession";
 
-export async function getFriends({ credential }: { credential: Credential }) {
-  const res = await get(
-    `${BASE_URL}api/users/${credential.userId}/friends`,
-    getAuthHeader(credential)
+export async function getFriends({
+  userSession,
+}: {
+  userSession: NeosUserSessionType;
+}): Promise<NeosFriendType[]> {
+  const response = await get(
+    `${BASE_URL}api/users/${userSession.userId}/friends`,
+    {
+      headers: getAuthHeader(userSession),
+    }
   );
-  return res.data;
+  return response.data;
 }
 
 export async function addFriend({
-  credential,
+  userSession,
   targetUserId,
 }: {
-  credential: Credential;
+  userSession: NeosUserSessionType;
   targetUserId: string;
 }) {
   const response = await put(
-    `${BASE_URL}api/users/${credential.userId}/friends/${targetUserId}`,
+    `${BASE_URL}api/users/${userSession.userId}/friends/${targetUserId}`,
     { id: targetUserId, friendStatus: "Accepted" },
-    getAuthHeader(credential)
+    {
+      headers: getAuthHeader(userSession),
+    }
   );
-  return response;
+  return response.data;
 }
