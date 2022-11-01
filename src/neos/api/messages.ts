@@ -7,6 +7,8 @@ import {
   uuidv4,
   patch,
 } from "../common";
+import { NeosMessageType } from "../type/message";
+import { parseNeosMessage } from "../util/message";
 
 export async function getMessages({
   credential,
@@ -27,7 +29,7 @@ export async function getMessages({
     }`,
     getAuthHeader(credential)
   );
-  return res.data;
+  return res.data.map((message: NeosMessageType) => parseNeosMessage(message));
 }
 
 export async function sendTextMessage({

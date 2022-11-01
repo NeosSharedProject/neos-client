@@ -4,6 +4,8 @@ import {
   HubConnection,
   HttpTransportType,
 } from "@microsoft/signalr";
+import { MessageType, NeosMessageType } from "../type/message";
+import { parseNeosMessage } from "../util/message";
 
 export async function negotiateHub(credential: Credential): Promise<{
   negotiateVersion: number;
@@ -24,7 +26,7 @@ export async function connectHub(
   credential: Credential,
   eventCallbacks: {
     methodName: "ReceiveMessage";
-    callback: (data: any) => any;
+    callback: (data: MessageType) => any;
   }[]
 ): Promise<HubConnection> {
   const data = await negotiateHub(credential);
@@ -37,8 +39,8 @@ export async function connectHub(
     .build();
 
   eventCallbacks.forEach(({ methodName, callback }) => {
-    connection.on(methodName, (data) => {
-      callback(data);
+    connection.on(methodName, (message: NeosMessageType) => {
+      callback(parseNeosMessage(message));
     });
   });
 

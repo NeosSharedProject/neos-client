@@ -10,6 +10,7 @@ import { login, LoginInput } from "./api/userSessions";
 import { getUser } from "./api/users";
 import { Credential, isCredential, uuidv4 } from "./common";
 import { HubConnection } from "@microsoft/signalr";
+import { MessageType } from "./type/message";
 
 export type LoginCredential = LoginInput & { secretMachineId: string };
 
@@ -20,22 +21,15 @@ export class Neos {
   };
   wss: HubConnection | undefined;
   eventCallbacks: {
-    messageReceived?: (message: {
-      id: string;
-      ownerId: string;
-      recipientId: string;
-      senderId: string;
-      messageType: "Text" | "Object";
-      content: string;
-      sendTime: string;
-      lastUpdateTime: string;
-      readTime: string | null;
-    }) => any;
+    messageReceived?: (message: MessageType) => any;
   } = {};
 
   constructor(login: LoginInput) {
     this.info = {
-      login: { secretMachineId: uuidv4().replace(/-/g, ""), ...login },
+      login: {
+        secretMachineId: uuidv4().replace(/-/g, "").substring(0, 21),
+        ...login,
+      },
     };
   }
 
