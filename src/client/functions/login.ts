@@ -40,6 +40,7 @@ export async function login(this: Neos): Promise<void> {
 
     this.eventManager?.emit("Login");
   } catch (e) {
+    console.error(e);
     this.userSession = undefined;
     throw new Error("login error");
   }
