@@ -40,6 +40,7 @@ export class Neos {
     messageReceived?: (message: ReceiveMessageEventArgumentType) => any;
     messageRead?: (data: MessagesReadEventArgumentType) => any;
     messageSend?: (message: MessageType) => any;
+    messageMark?: (messageIds: NeosMessageIdType[]) => any;
   } = {};
   messages?: MessageType[];
 
@@ -86,6 +87,9 @@ export class Neos {
           ? { ...message, readTime }
           : message
       );
+      if (this.eventCallbacks.messageMark) {
+        this.eventCallbacks.messageMark(messageIds);
+      }
     }
   }
 
@@ -184,6 +188,10 @@ export class Neos {
     | {
         type: "messageRead";
         callback: (data: MessagesReadEventArgumentType) => any;
+      }
+    | {
+        type: "messageMark";
+        callback: (data: NeosMessageIdType[]) => any;
       }) {
     switch (type) {
       case "messageReceived":
@@ -194,6 +202,9 @@ export class Neos {
         break;
       case "messageRead":
         this.eventCallbacks.messageRead = callback;
+        break;
+      case "messageMark":
+        this.eventCallbacks.messageMark = callback;
         break;
     }
   }
