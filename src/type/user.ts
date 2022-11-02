@@ -2,6 +2,7 @@ import { NeosDateStringType, NeosUriType, NeosVersionType } from "./common";
 import { NeosSessionIdType, NeosUserIdType } from "./id";
 import { NeosSessionType } from "./session";
 
+//TODO どんな値があるか調査して書く。
 export type NeosUserStatusType =
   | {
       onlineStatus: "Offline";
