@@ -26,8 +26,19 @@ export async function login(this: Neos): Promise<void> {
         this.eventManager?.messageManager?.syncMessages({
           userSession: this.userSession,
         }),
+        this.option.autoSync
+          ? (async () => {
+              if (this.userSession) {
+                this.currentUser = await this.getUser({
+                  targetUserId: this.userSession.userId,
+                });
+              }
+            })()
+          : undefined,
       ].filter((v) => v)
     );
+
+    this.eventManager?.emit("Login");
   } catch (e) {
     this.userSession = undefined;
     throw new Error("login error");

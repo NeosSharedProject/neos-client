@@ -20,7 +20,8 @@ export type EventType =
         readTime: NeosDateStringType
       ) => any
     ]
-  | [eventName: "MessageSent", listener: (message: MessageType) => any];
+  | [eventName: "MessageSent", listener: (message: MessageType) => any]
+  | [eventName: "Login", listener: () => any];
 
 export class EventManager extends EventEmitter {
   hubConnection?: HubConnection;
@@ -31,11 +32,6 @@ export class EventManager extends EventEmitter {
     if (option.messageSync) {
       this.messageManager = new MessageManager(this);
     }
-  }
-
-  override on(...[eventName, listener]: EventType): this {
-    super.on(eventName, listener);
-    return this;
   }
 
   override emit(

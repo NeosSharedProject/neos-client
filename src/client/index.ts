@@ -13,6 +13,7 @@ import { sendTextMessage } from "./functions/sendTextMessage";
 import { login } from "./functions/login";
 import { logout } from "./functions/logout";
 import { checkSession } from "./functions/checkSession";
+import { NeosUserType } from "../type/user";
 
 export type NeosClientOption = {
   saveLoginCredential: boolean;
@@ -29,6 +30,7 @@ export class Neos {
   option: Readonly<NeosClientOption>;
   userSession?: NeosUserSessionType;
   eventManager?: EventManager;
+  currentUser?: NeosUserType;
 
   constructor(
     loginCredential: NeosLoginCredentialType,
@@ -63,7 +65,7 @@ export class Neos {
   readMessage = readMessages;
   sendTextMessage = sendTextMessage;
 
-  on(...args: EventType) {
-    this.eventManager?.on(...args);
+  on(...[eventName, listener]: EventType) {
+    this.eventManager?.on(eventName, listener);
   }
 }

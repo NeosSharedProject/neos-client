@@ -40,7 +40,6 @@ export class Neos {
     messageReceived?: (message: ReceiveMessageEventArgumentType) => any;
     messageRead?: (data: MessagesReadEventArgumentType) => any;
     messageSend?: (message: MessageType) => any;
-    messageMark?: (messageIds: NeosMessageIdType[]) => any;
   } = {};
   messages?: MessageType[];
 
@@ -57,7 +56,7 @@ export class Neos {
     };
   }
 
-  private addLocalMessage(message: MessageType) {
+  private addMessage(message: MessageType) {
     if (this.messages) {
       this.messages = [...this.messages, message];
       if (this.eventCallbacks.messageSend) {
@@ -66,7 +65,7 @@ export class Neos {
     }
   }
 
-  private readLocalMessage(data: MessagesReadEventArgumentType) {
+  private readMessage(data: MessagesReadEventArgumentType) {
     if (this.messages) {
       const newMessages = this.messages
         .filter((msg) => data.ids.some((id) => id === msg.id))
@@ -75,20 +74,6 @@ export class Neos {
         ...this.messages.filter((msg) => data.ids.some((id) => id !== msg.id)),
         ...newMessages,
       ];
-    }
-  }
-
-  private markLocalMessage(messageIds: NeosMessageIdType[]) {
-    if (this.messages) {
-      const readTime = new Date().toISOString();
-      this.messages = this.messages.map((message) =>
-        messageIds.some((id) => id === message.id)
-          ? { ...message, readTime }
-          : message
-      );
-      if (this.eventCallbacks.messageMark) {
-        this.eventCallbacks.messageMark(messageIds);
-      }
     }
   }
 
@@ -115,7 +100,7 @@ export class Neos {
             {
               methodName: "ReceiveMessage",
               callback: (message) => {
-                this.addLocalMessage(message);
+                this.addMessage(message);
                 if (this.eventCallbacks.messageReceived) {
                   this.eventCallbacks.messageReceived(message);
                 }
@@ -124,7 +109,7 @@ export class Neos {
             {
               methodName: "MessagesRead",
               callback: (data) => {
-                this.readLocalMessage(data);
+                this.readMessage(data);
                 if (this.eventCallbacks.messageRead) {
                   this.eventCallbacks.messageRead(data);
                 }
@@ -186,10 +171,6 @@ export class Neos {
     | {
         type: "messageRead";
         callback: (data: MessagesReadEventArgumentType) => any;
-      }
-    | {
-        type: "messageMark";
-        callback: (data: NeosMessageIdType[]) => any;
       }) {
     switch (type) {
       case "messageReceived":
@@ -200,9 +181,6 @@ export class Neos {
         break;
       case "messageRead":
         this.eventCallbacks.messageRead = callback;
-        break;
-      case "messageMark":
-        this.eventCallbacks.messageMark = callback;
         break;
     }
   }
@@ -246,18 +224,17 @@ export class Neos {
       message,
     });
     if (this.option.autoSync.messages && this.messages) {
-      await this.addLocalMessage(body);
+      await this.addMessage(body);
     }
     return body;
   }
 
-  async markMessageRead({ messageIds }: { messageIds: NeosMessageIdType[] }) {
+  async markMessageRead({ messageIds }: { messageIds: string[] }) {
     await this.checkSession();
     if (!this.userSession) {
       throw new Error("userSession error");
     }
-    this.markLocalMessage(messageIds);
-    await markMessageRead({
+    return await markMessageRead({
       messageIds,
       userSession: this.userSession,
     });
