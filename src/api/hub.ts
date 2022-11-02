@@ -2,6 +2,7 @@ import {
   HubConnectionBuilder,
   HubConnection,
   HttpTransportType,
+  LogLevel,
 } from "@microsoft/signalr";
 import { post } from "../common";
 import { NeosUserSessionType } from "../type/userSession";
@@ -44,6 +45,7 @@ export async function connectHub({
       skipNegotiation: true,
       transport: HttpTransportType.WebSockets,
     })
+    .configureLogging(LogLevel.Error)
     .build();
 
   eventCallbacks?.forEach(({ methodName, callback }) => {
