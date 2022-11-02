@@ -57,14 +57,15 @@ export async function markMessageRead({
   messageIds,
   userSession,
 }: {
-  messageIds: string[];
+  messageIds: NeosMessageIdType[];
   userSession: NeosUserSessionType;
-}) {
-  return await patch(
+}): Promise<NeosMessageIdType[]> {
+  await patch(
     `${BASE_URL}api/users/${userSession.userId}/messages/`,
     messageIds,
     { headers: getAuthHeader(userSession) }
   );
+  return messageIds;
 }
 
 export async function sendKFC({
