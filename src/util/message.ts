@@ -44,7 +44,8 @@ export function getSoundMessageContent(
 }
 
 export function parseNeosMessage(message: NeosMessageType): MessageType {
-  switch (message.messageType) {
+  const messageType = message.messageType;
+  switch (messageType) {
     case "Text":
       return message;
     case "Object":
@@ -64,7 +65,10 @@ export function parseNeosMessage(message: NeosMessageType): MessageType {
       };
     case "Sound":
       return { ...message, content: getSoundMessageContent(message) };
+    // case "SugarCubes":
+    //   return message;
     default:
-      throw new Error(`unknown messageType. message=${message}`);
+      console.error(`unknown messageType. messageType=${messageType}`);
+      return message;
   }
 }
