@@ -35,7 +35,7 @@ export async function connectHub({
   eventCallbacks,
 }: {
   userSession: NeosUserSessionType;
-  eventCallbacks: EventCallbackListType;
+  eventCallbacks?: EventCallbackListType;
 }): Promise<HubConnection> {
   const data = await negotiateHub({ userSession });
 
@@ -46,7 +46,7 @@ export async function connectHub({
     })
     .build();
 
-  eventCallbacks.forEach(({ methodName, callback }) => {
+  eventCallbacks?.forEach(({ methodName, callback }) => {
     connection.on(methodName, (data: any) => {
       switch (methodName) {
         case "ReceiveMessage":

@@ -2,8 +2,8 @@
   "name": "neos-client",
   "version": "0.3.2",
   "description": "A simple client that uses the Neos API",
-  "main": "dist/index.js",
-  "types": "dist/index.d.js",
+  "main": "dist/client/index.js",
+  "types": "dist/client/index.d.js",
   "scripts": {
     "build": "tsc",
     "prepare": "npm run build"
