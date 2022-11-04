@@ -19,6 +19,7 @@ export class MessageManager {
       !this.localMessages.some((msg) => msg.id === message.id)
     ) {
       this.localMessages.push(message);
+      this.eventManager.emit("MessagesUpdated", this.localMessages);
     }
   }
 
@@ -34,6 +35,9 @@ export class MessageManager {
         ? { ...message, readTime }
         : message
     );
+    if (this.localMessages) {
+      this.eventManager.emit("MessagesUpdated", this.localMessages);
+    }
   }
 
   public async syncMessages({
@@ -42,6 +46,7 @@ export class MessageManager {
     userSession: NeosUserSessionType;
   }): Promise<void> {
     this.localMessages = await getMessages({ userSession });
+    this.eventManager.emit("MessagesUpdated", this.localMessages);
   }
 
   public async sendTextMessage({
@@ -59,7 +64,6 @@ export class MessageManager {
       message,
     });
     this._addLocalMessage({ message: msg });
-    this.eventManager.emit("MessageSent", msg);
     return msg;
   }
 

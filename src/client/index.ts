@@ -48,7 +48,7 @@ export class Neos {
     };
 
     if (this.option.useEvents) {
-      this.eventManager = new EventManager({
+      this.eventManager = new EventManager(this, {
         messageSync: this.option.autoSync,
       });
     }

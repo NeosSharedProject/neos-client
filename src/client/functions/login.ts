@@ -20,23 +20,18 @@ export async function login(this: Neos): Promise<void> {
       };
     }
 
-    await Promise.all(
-      [
-        this.eventManager?.connectHub({ userSession: this.userSession }),
-        this.eventManager?.messageManager?.syncMessages({
-          userSession: this.userSession,
-        }),
-        this.option.autoSync
-          ? (async () => {
-              if (this.userSession) {
-                this.currentUser = await this.getUser({
-                  targetUserId: this.userSession.userId,
-                });
-              }
-            })()
-          : undefined,
-      ].filter((v) => v)
-    );
+    if (this.option.autoSync) {
+      this.eventManager?.initSync();
+      (async () => {
+        if (this.userSession) {
+          this.currentUser = await this.getUser({
+            targetUserId: this.userSession.userId,
+          });
+        }
+      })();
+    }
+
+    await this.eventManager?.connectHub({ userSession: this.userSession });
 
     this.eventManager?.emit("Login");
   } catch (e) {
