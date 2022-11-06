@@ -87,7 +87,9 @@ export class EventManager extends EventEmitter {
     if (this.updateInterval) {
       clearInterval(this.updateInterval);
     }
-    this.updateInterval = setInterval(this.updateSync, 3000);
+    this.updateInterval = setInterval(async () => {
+      await this.updateSync();
+    }, 3000);
   }
 
   async updateSync() {
