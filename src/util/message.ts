@@ -1,3 +1,5 @@
+import { uuidv4 } from "../common";
+import { NeosUserIdType } from "../type/id";
 import {
   CreditTransferMessageContentType,
   MessageType,
@@ -9,6 +11,7 @@ import {
   ObjectMessageContentType,
   SessionInviteMessageContentType,
   SoundMessageContentType,
+  TextMessageType,
 } from "../type/message";
 
 function safeJsonParse<T>(str: string): T | string {
@@ -71,4 +74,26 @@ export function parseNeosMessage(message: NeosMessageType): MessageType {
       console.error(`unknown messageType. messageType=${messageType}`);
       return message;
   }
+}
+
+export function generateTextMessage({
+  targetUserId,
+  senderUserId,
+  content,
+}: {
+  targetUserId: NeosUserIdType;
+  senderUserId: NeosUserIdType;
+  content: string;
+}): TextMessageType {
+  return {
+    id: `MSG-${uuidv4()}`,
+    senderId: senderUserId,
+    recipientId: targetUserId,
+    messageType: "Text",
+    content,
+    sendTime: new Date().toISOString(),
+    lastUpdateTime: new Date().toISOString(),
+    readTime: null,
+    ownerId: senderUserId,
+  };
 }

@@ -8,7 +8,11 @@ import { post } from "../common";
 import { NeosUserSessionType } from "../type/userSession";
 import { parseNeosMessage } from "../util/message";
 import { getAuthHeader } from "../util/userSession";
-import { EventCallbackListType } from "../type/hub";
+import {
+  EventCallbackListType,
+  MessagesReadEventArgumentType,
+} from "../type/hub";
+import { NeosMessageType } from "../type/message";
 
 export type NeosHubNegotiation = {
   negotiateVersion: number;
@@ -64,4 +68,24 @@ export async function connectHub({
   connection.start();
 
   return connection;
+}
+
+export async function sendMessage({
+  connection,
+  message,
+}: {
+  connection: HubConnection;
+  message: NeosMessageType;
+}) {
+  await connection.send("SendMessage", message);
+}
+
+export async function markMessageRead({
+  connection,
+  markReadBatch,
+}: {
+  connection: HubConnection;
+  markReadBatch: MessagesReadEventArgumentType;
+}) {
+  await connection.send("MarkMessagesRead", markReadBatch);
 }

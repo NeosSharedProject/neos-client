@@ -2,7 +2,7 @@ import { BASE_URL, get, post, uuidv4, patch } from "../common";
 import { NeosMessageIdType, NeosUserIdType } from "../type/id";
 import { MessageType, NeosMessageType, TextMessageType } from "../type/message";
 import { NeosUserSessionType } from "../type/userSession";
-import { parseNeosMessage } from "../util/message";
+import { generateTextMessage, parseNeosMessage } from "../util/message";
 import { getAuthHeader } from "../util/userSession";
 
 export async function getMessages({
@@ -36,17 +36,11 @@ export async function sendTextMessage({
   targetUserId: NeosUserIdType;
   message: string;
 }): Promise<TextMessageType> {
-  const body: TextMessageType = {
-    id: `MSG-${uuidv4()}`,
-    senderId: userSession.userId,
-    recipientId: targetUserId,
-    messageType: "Text",
+  const body = generateTextMessage({
+    targetUserId,
+    senderUserId: userSession.userId,
     content: message,
-    sendTime: new Date().toISOString(),
-    lastUpdateTime: new Date().toISOString(),
-    readTime: null,
-    ownerId: userSession.userId,
-  };
+  });
   await post(`${BASE_URL}api/users/${targetUserId}/messages`, body, {
     headers: getAuthHeader(userSession),
   });
