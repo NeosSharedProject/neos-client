@@ -22,7 +22,9 @@ export class FriendManager {
       const requestedFriends = friends.filter((friend) => {
         const prevFriend = this.localFriends?.find((f) => f.id === friend.id);
         return (
-          prevFriend?.friendStatus !== "None" && friend.friendStatus === "None"
+          (!prevFriend?.friendStatus ||
+            prevFriend.friendStatus !== "Requested") &&
+          friend.friendStatus === "Requested"
         );
       });
       requestedFriends.forEach((friend) => {
