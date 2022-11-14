@@ -75,7 +75,7 @@ import { getAuthHeader, isPasswordCredential } from "./util/userSession";
 export const Neos = NeosClient;
 export type Neos = NeosClient;
 
-export const API = {
+export const NeosAPI = {
   getFriends,
   addFriend,
   getMessages,
@@ -89,14 +89,14 @@ export const API = {
   deleteUserSession,
 };
 
-export const Hub = {
+export const NeosHub = {
   negotiateHub,
   connectHub,
   sendMessage: sendMessageHub,
   markMessage: marMessageReadHub,
 };
 
-export namespace Util {
+export namespace NeosUtil {
   export const Common = {
     escapeTagString,
     neosdb2https,
@@ -115,7 +115,7 @@ export namespace Util {
   };
 }
 
-export namespace Type {
+export namespace NeosType {
   //common
   export type NeosDateString = NeosDateStringType;
   export type NeosVersion = NeosVersionType;
