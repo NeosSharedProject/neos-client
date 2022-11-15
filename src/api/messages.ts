@@ -67,11 +67,13 @@ export async function sendKFC({
   targetUserId,
   amount,
   comment,
+  totp,
 }: {
   userSession: NeosUserSessionType;
   targetUserId: string;
   amount: number;
   comment?: string;
+  totp?: string;
 }) {
   return await post(
     `${BASE_URL}api/transactions/KFC`,
@@ -84,6 +86,6 @@ export async function sendKFC({
       transactionType: "User2User",
       anonymous: false,
     },
-    { headers: getAuthHeader(userSession) }
+    { headers: { ...getAuthHeader(userSession), TOTP: totp } }
   );
 }
