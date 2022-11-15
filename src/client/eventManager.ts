@@ -2,7 +2,7 @@ import { HubConnection } from "@microsoft/signalr";
 import { NeosUserSessionType } from "../type/userSession";
 import { connectHub } from "../api/hub";
 import { EventEmitter } from "events";
-import { MessageType } from "../type/message";
+import { MessageType, NeosMessageType } from "../type/message";
 import { NeosMessageIdType } from "../type/id";
 import { NeosDateStringType } from "../type/common";
 import {
@@ -13,6 +13,7 @@ import { MessageManager } from "./messageManager";
 import { NeosFriendType } from "../type/friend";
 import { Neos } from ".";
 import { FriendManager } from "./friendManager";
+import { parseNeosMessage } from "../util/message";
 
 export type EventType =
   | [eventName: "MessageReceived", listener: (message: MessageType) => any]
@@ -57,13 +58,13 @@ export class EventManager extends EventEmitter {
     this.hubConnection = await connectHub({
       userSession,
     });
-    this.hubConnection.on(
-      "ReceiveMessage",
-      (message: ReceiveMessageEventArgumentType) => {
-        this.messageManager?._addLocalMessage({ message });
-        this.emit("MessageReceived", message);
-      }
-    );
+    this.hubConnection.on("ReceiveMessage", (NeosMessage: NeosMessageType) => {
+      const message = parseNeosMessage(NeosMessage);
+      this.messageManager?._addLocalMessage({
+        message,
+      });
+      this.emit("MessageReceived", message);
+    });
     this.hubConnection.on(
       "MessagesRead",
       ({ ids, readTime }: MessagesReadEventArgumentType) => {
