@@ -14,6 +14,7 @@ import { login } from "./functions/login";
 import { logout } from "./functions/logout";
 import { checkSession } from "./functions/checkSession";
 import { NeosUserType } from "../type/user";
+import { sendKFC } from "./functions/sendKfc";
 
 export type NeosClientOption = {
   saveLoginCredential: boolean;
@@ -64,6 +65,7 @@ export class Neos {
   getUser = getUser;
   readMessage = readMessages;
   sendTextMessage = sendTextMessage;
+  sendKFC = sendKFC;
 
   on(...[eventName, listener]: EventType) {
     this.eventManager?.on(eventName, listener);
