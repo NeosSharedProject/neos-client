@@ -14,7 +14,7 @@ import { login } from "./functions/login";
 import { logout } from "./functions/logout";
 import { checkSession } from "./functions/checkSession";
 import { NeosUserType } from "../type/user";
-import { sendKFC } from "./functions/sendKfc";
+import { sendKFC } from "./functions/sendKFC";
 
 export type NeosClientOption = {
   saveLoginCredential: boolean;

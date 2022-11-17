@@ -13,7 +13,7 @@ export async function sendKFC(
     targetUserId: NeosUserIdType;
     amount: number;
     comment?: string;
-    totp: string;
+    totp?: string;
   }
 ): Promise<void> {
   await this.checkSession();
@@ -21,11 +21,21 @@ export async function sendKFC(
     throw new Error("userSession error");
   }
 
-  await apiSendKFC({
-    userSession: this.userSession,
-    targetUserId,
-    amount,
-    comment,
-    totp,
-  });
+  if (this.eventManager?.messageManager) {
+    await this.eventManager.messageManager.sendKFC({
+      userSession: this.userSession,
+      targetUserId,
+      amount,
+      comment,
+      totp,
+    });
+  } else {
+    await apiSendKFC({
+      userSession: this.userSession,
+      targetUserId,
+      amount,
+      comment,
+      totp,
+    });
+  }
 }

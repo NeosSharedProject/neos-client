@@ -6,6 +6,7 @@ import { MessageType, TextMessageType } from "../type/message";
 import { NeosUserSessionType } from "../type/userSession";
 import { generateTextMessage } from "../util/message";
 import { EventManager } from "./eventManager";
+import { sendKFC } from "../api/messages";
 
 export class MessageManager {
   localMessages?: MessageType[];
@@ -51,6 +52,25 @@ export class MessageManager {
     this.eventManager.emit("MessagesUpdated", this.localMessages);
   }
 
+  public async syncUserMessages({
+    userSession,
+    targetUserId,
+    fromTime,
+  }: {
+    userSession: NeosUserSessionType;
+    targetUserId: NeosUserIdType;
+    fromTime?: Date;
+  }) {
+    const userMessages = await getMessages({
+      userSession,
+      targetUserId,
+      fromTime,
+    });
+    userMessages.forEach((message) => {
+      this._addLocalMessage({ message });
+    });
+  }
+
   public async sendTextMessage({
     userSession,
     targetUserId,
@@ -80,6 +100,31 @@ export class MessageManager {
     }
     this._addLocalMessage({ message: msg });
     return msg;
+  }
+
+  public async sendKFC({
+    userSession,
+    targetUserId,
+    amount,
+    comment,
+    totp,
+  }: {
+    userSession: NeosUserSessionType;
+    targetUserId: NeosUserIdType;
+    amount: number;
+    comment?: string;
+    totp?: string;
+  }) {
+    await sendKFC({
+      userSession: userSession,
+      targetUserId,
+      amount,
+      comment,
+      totp,
+    });
+    const fromTime = new Date();
+    fromTime.setDate(fromTime.getDate() - 1);
+    await this.syncUserMessages({ userSession, targetUserId, fromTime });
   }
 
   public async readMessages({
