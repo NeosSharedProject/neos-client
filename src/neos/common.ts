@@ -1,7 +1,7 @@
 import axios from "axios";
 import { v4 } from "uuid";
 
-export const BASE_URL = "https://api.neos.com/";
+export const BASE_URL = "https://apiproxy.neos.love/";
 
 export type Credential = {
   userId: string;
@@ -34,5 +34,6 @@ export function getAuthHeader(credential: Credential) {
 export const post = axios.post;
 export const get = axios.get;
 export const put = axios.put;
+export const patch = axios.patch;
 
 export const uuidv4 = v4;
