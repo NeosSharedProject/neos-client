@@ -21,18 +21,25 @@ export async function login(this: Neos): Promise<void> {
       };
     }
 
+    let tasks = [];
     if (this.option.autoSync) {
       this.eventManager?.initSync();
-      (async () => {
-        if (this.userSession) {
-          this.currentUser = await this.getUser({
-            targetUserId: this.userSession.userId,
-          });
-        }
-      })();
+      tasks.push(
+        (async () => {
+          if (this.userSession) {
+            this.currentUser = await this.getUser({
+              targetUserId: this.userSession.userId,
+            });
+          }
+        })()
+      );
     }
 
-    await this.eventManager?.connectHub({ userSession: this.userSession });
+    tasks.push(
+      this.eventManager?.connectHub({ userSession: this.userSession })
+    );
+
+    await Promise.all(tasks);
 
     this.eventManager?.emit("Login");
   } catch (e) {
