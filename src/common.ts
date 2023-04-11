@@ -1,7 +1,7 @@
 import axios from "axios";
 import { v4 } from "uuid";
 
-export const BASE_URL = "https://api.neos.com/";
+export const BASE_URL = "https://cloudx.azurewebsites.net/";
 
 export const post = axios.post;
 export const get = axios.get;
