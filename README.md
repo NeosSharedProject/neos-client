@@ -1,26 +1,32 @@
-Neos の API を使うためのシンプルなクライアントです。
+Neos の API を使うためのクライアントです。
 
-## how to use
+## usage
 
 > npm i neos-client
 
 ```js
-const Neos = require("neos-client");
+const { Neos } = require("neos-client");
 
-async function main() {
-  const neos = new Neos("username", "password");
+const neos = new Neos({ username: "username ", password: "password" });
 
-  console.log(await neos.getFriends());
+neos.on("Login", () => {
+  console.log("Login: ", neos.currentUser);
+});
 
-  console.log(
-    await neos.sendTextMessage({ targetUserId: "U-Neos", message: "Hello" })
-  );
+neos.on("MessageReceived", (message) => {
+  console.log("messageReceived: ", message);
+  if (message.messageType === "Text") {
+    neos.sendTextMessage({
+      targetUserId: message.senderId,
+      message: message.content,
+    });
+  }
+});
 
-  // console.log(await neos.addFriend({ targetUserId: "U-***" }));
-  // console.log(await neos.sendKFC({ targetUserId: "U-***", amount: 0.1 }));
+neos.on("FriendRequested", (friend) => {
+  console.log("FriendRequested: ", friend.friendUsername);
+  neos.addFriend({ targetUserId: friend.id });
+});
 
-  console.log(await neos.getMessages({ targetUserId: "U-Neos" }));
-}
-
-main();
+neos.login();
 ```
