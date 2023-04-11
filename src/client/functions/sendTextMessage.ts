@@ -1,7 +1,7 @@
 import { Neos } from "..";
 import { NeosUserIdType } from "../../type/id";
 import { TextMessageType } from "../../type/message";
-import { sendTextMessage as apiSendTextMessage } from "../../api/messages";
+import { apiSendTextMessage } from "../../api/messages";
 
 export async function sendTextMessage(
   this: Neos,
@@ -29,6 +29,7 @@ export async function sendTextMessage(
       userSession: this.userSession,
       targetUserId,
       message,
+      overrideBaseUrl: this.overrideBaseUrl,
     });
   }
 }

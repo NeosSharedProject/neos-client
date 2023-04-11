@@ -1,5 +1,5 @@
 import { Neos } from "..";
-import { addFriend as apiAddFriend } from "../../api/friends";
+import { apiAddFriend } from "../../api/friends";
 import { NeosUserIdType } from "../../type/id";
 
 export async function addFriend(
@@ -19,6 +19,7 @@ export async function addFriend(
     await apiAddFriend({
       userSession: this.userSession,
       targetUserId,
+      overrideBaseUrl: this.overrideBaseUrl,
     });
   }
 }

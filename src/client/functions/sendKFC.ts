@@ -1,6 +1,6 @@
 import { Neos } from "..";
 import { NeosUserIdType } from "../../type/id";
-import { sendKFC as apiSendKFC } from "../../api/messages";
+import { apiSendKFC } from "../../api/messages";
 
 export async function sendKFC(
   this: Neos,
@@ -36,6 +36,7 @@ export async function sendKFC(
       amount,
       comment,
       totp,
+      overrideBaseUrl: this.overrideBaseUrl,
     });
   }
 }

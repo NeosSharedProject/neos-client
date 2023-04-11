@@ -1,18 +1,18 @@
-import { getFriends, addFriend } from "./api/friends";
+import { apiGetFriends, apiAddFriend } from "./api/friends";
 import {
-  negotiateHub,
-  connectHub,
-  sendMessage as sendMessageHub,
-  markMessageRead as marMessageReadHub,
+  apiNegotiateHub,
+  apiConnectHub,
+  sendMessageHub,
+  markMessageReadHub,
 } from "./api/hub";
 import {
-  getMessages,
-  sendTextMessage,
-  markMessageRead,
-  sendKFC,
+  apiGetMessages,
+  apiSendTextMessage,
+  apiMarkMessageRead,
+  apiSendKFC,
 } from "./api/messages";
-import { getUser, getUserStatus, putUserStatus } from "./api/users";
-import { deleteUserSession, postUserSession } from "./api/userSessions";
+import { apiGetUser, apiGetUserStatus, apiPutUserStatus } from "./api/users";
+import { apiDeleteUserSession, apiPostUserSession } from "./api/userSessions";
 import { Neos as NeosClient } from "./client";
 import {
   NeosDateStringType,
@@ -76,24 +76,24 @@ export const Neos = NeosClient;
 export type Neos = NeosClient;
 
 export const NeosAPI = {
-  getFriends,
-  addFriend,
-  getMessages,
-  sendTextMessage,
-  markMessageRead,
-  sendKFC,
-  getUser,
-  getUserStatus,
-  putUserStatus,
-  postUserSession,
-  deleteUserSession,
+  apiGetFriends,
+  apiAddFriend,
+  apiGetMessages,
+  apiSendTextMessage,
+  apiMarkMessageRead,
+  apiSendKFC,
+  apiGetUser,
+  apiGetUserStatus,
+  apiPutUserStatus,
+  apiPostUserSession,
+  apiDeleteUserSession,
 };
 
 export const NeosHub = {
-  negotiateHub,
-  connectHub,
-  sendMessage: sendMessageHub,
-  markMessage: marMessageReadHub,
+  apiNegotiateHub,
+  apiConnectHub,
+  sendMessageHub,
+  markMessageReadHub,
 };
 
 export namespace NeosUtil {

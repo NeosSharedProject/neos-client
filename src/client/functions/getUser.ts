@@ -1,5 +1,5 @@
 import { Neos } from "..";
-import { getUser as apiGetUser } from "../../api/users";
+import { apiGetUser } from "../../api/users";
 
 export async function getUser(
   this: Neos,
@@ -9,5 +9,9 @@ export async function getUser(
   if (!this.userSession) {
     throw new Error("userSession error");
   }
-  return apiGetUser({ userSession: this.userSession, targetUserId });
+  return apiGetUser({
+    userSession: this.userSession,
+    targetUserId,
+    overrideBaseUrl: this.overrideBaseUrl,
+  });
 }

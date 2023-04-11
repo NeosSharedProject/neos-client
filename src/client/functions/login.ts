@@ -1,11 +1,12 @@
 import { Neos } from "..";
-import { postUserSession } from "../../api/userSessions";
+import { apiPostUserSession } from "../../api/userSessions";
 import { isPasswordCredential } from "../../util/userSession";
 
 export async function login(this: Neos): Promise<void> {
   try {
-    this.userSession = await postUserSession({
+    this.userSession = await apiPostUserSession({
       loginCredential: this.loginCredential,
+      overrideBaseUrl: this.overrideBaseUrl,
     });
 
     if (

@@ -1,12 +1,16 @@
-import { sendMessage, markMessageRead as markMessageReadHub } from "../api/hub";
-import { getMessages, markMessageRead, sendTextMessage } from "../api/messages";
+import { sendMessageHub, markMessageReadHub } from "../api/hub";
+import {
+  apiGetMessages,
+  apiMarkMessageRead,
+  apiSendTextMessage,
+} from "../api/messages";
 import { NeosDateStringType } from "../type/common";
 import { NeosMessageIdType, NeosUserIdType } from "../type/id";
 import { MessageType, TextMessageType } from "../type/message";
 import { NeosUserSessionType } from "../type/userSession";
 import { generateTextMessage } from "../util/message";
 import { EventManager } from "./eventManager";
-import { sendKFC } from "../api/messages";
+import { apiSendKFC } from "../api/messages";
 
 export class MessageManager {
   localMessages?: MessageType[];
@@ -48,7 +52,10 @@ export class MessageManager {
   }: {
     userSession: NeosUserSessionType;
   }): Promise<void> {
-    this.localMessages = await getMessages({ userSession });
+    this.localMessages = await apiGetMessages({
+      userSession,
+      overrideBaseUrl: this.eventManager.neos.overrideBaseUrl,
+    });
     this.eventManager.emit("MessagesUpdated", this.localMessages);
   }
 
@@ -61,10 +68,11 @@ export class MessageManager {
     targetUserId: NeosUserIdType;
     fromTime?: Date;
   }) {
-    const userMessages = await getMessages({
+    const userMessages = await apiGetMessages({
       userSession,
       targetUserId,
       fromTime,
+      overrideBaseUrl: this.eventManager.neos.overrideBaseUrl,
     });
     userMessages.forEach((message) => {
       this._addLocalMessage({ message });
@@ -87,15 +95,16 @@ export class MessageManager {
         senderUserId: userSession.userId,
         content: message,
       });
-      await sendMessage({
+      await sendMessageHub({
         connection: this.eventManager.hubConnection,
         message: msg,
       });
     } else {
-      msg = await sendTextMessage({
+      msg = await apiSendTextMessage({
         userSession,
         targetUserId,
         message,
+        overrideBaseUrl: this.eventManager.neos.overrideBaseUrl,
       });
     }
     this._addLocalMessage({ message: msg });
@@ -115,16 +124,21 @@ export class MessageManager {
     comment?: string;
     totp?: string;
   }) {
-    await sendKFC({
+    await apiSendKFC({
       userSession: userSession,
       targetUserId,
       amount,
       comment,
       totp,
+      overrideBaseUrl: this.eventManager.neos.overrideBaseUrl,
     });
     const fromTime = new Date();
     fromTime.setDate(fromTime.getDate() - 1);
-    await this.syncUserMessages({ userSession, targetUserId, fromTime });
+    await this.syncUserMessages({
+      userSession,
+      targetUserId,
+      fromTime,
+    });
   }
 
   public async readMessages({
@@ -148,7 +162,11 @@ export class MessageManager {
       });
       return messageIds;
     } else {
-      return await markMessageRead({ userSession, messageIds });
+      return await apiMarkMessageRead({
+        userSession,
+        messageIds,
+        overrideBaseUrl: this.eventManager.neos.overrideBaseUrl,
+      });
     }
   }
 }

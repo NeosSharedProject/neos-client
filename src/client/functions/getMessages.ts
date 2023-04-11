@@ -1,7 +1,7 @@
 import { Neos } from "..";
 import { NeosUserIdType } from "../../type/id";
 import { MessageType } from "../../type/message";
-import { getMessages as apiGetMessages } from "../../api/messages";
+import { apiGetMessages } from "../../api/messages";
 
 export async function getMessages(
   this: Neos,
@@ -32,6 +32,7 @@ export async function getMessages(
       targetUserId,
       unReadOnly,
       fromTime,
+      overrideBaseUrl: this.overrideBaseUrl,
     });
   }
 }

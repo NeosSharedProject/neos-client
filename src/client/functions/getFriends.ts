@@ -1,5 +1,5 @@
 import { NeosFriendType } from "../../type/friend";
-import { getFriends as apiGetFriends } from "../../api/friends";
+import { apiGetFriends } from "../../api/friends";
 import { Neos } from "..";
 
 export async function getFriends(this: Neos): Promise<NeosFriendType[]> {
@@ -7,5 +7,8 @@ export async function getFriends(this: Neos): Promise<NeosFriendType[]> {
   if (!this.userSession) {
     throw new Error("userSession error");
   }
-  return await apiGetFriends({ userSession: this.userSession });
+  return await apiGetFriends({
+    userSession: this.userSession,
+    overrideBaseUrl: this.overrideBaseUrl,
+  });
 }

@@ -1,5 +1,5 @@
 import { Neos } from "..";
-import { markMessageRead } from "../../api/messages";
+import { apiMarkMessageRead } from "../../api/messages";
 import { NeosMessageIdType } from "../../type/id";
 
 export async function readMessages(
@@ -21,9 +21,10 @@ export async function readMessages(
       messageIds,
     });
   } else {
-    return await markMessageRead({
+    return await apiMarkMessageRead({
       messageIds,
       userSession: this.userSession,
+      overrideBaseUrl: this.overrideBaseUrl,
     });
   }
 }

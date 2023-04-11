@@ -1,4 +1,4 @@
-import { addFriend, getFriends } from "../api/friends";
+import { apiAddFriend, apiGetFriends } from "../api/friends";
 import { NeosFriendType } from "../type/friend";
 import { NeosUserIdType } from "../type/id";
 import { NeosUserSessionType } from "../type/userSession";
@@ -17,7 +17,10 @@ export class FriendManager {
   }: {
     userSession: NeosUserSessionType;
   }): Promise<void> {
-    const friends = await getFriends({ userSession });
+    const friends = await apiGetFriends({
+      userSession,
+      overrideBaseUrl: this.eventManager.neos.overrideBaseUrl,
+    });
     if (this.localFriends) {
       const requestedFriends = friends.filter((friend) => {
         const prevFriend = this.localFriends?.find((f) => f.id === friend.id);
@@ -52,9 +55,10 @@ export class FriendManager {
     userSession: NeosUserSessionType;
     targetUserId: NeosUserIdType;
   }): Promise<void> {
-    await addFriend({
+    await apiAddFriend({
       userSession,
       targetUserId,
+      overrideBaseUrl: this.eventManager.neos.overrideBaseUrl,
     });
     await this.syncFriends({ userSession });
   }

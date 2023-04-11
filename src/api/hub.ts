@@ -4,7 +4,7 @@ import {
   HttpTransportType,
   LogLevel,
 } from "@microsoft/signalr";
-import { post } from "../common";
+import { BASE_URL, post } from "../common";
 import { NeosUserSessionType } from "../type/userSession";
 import { parseNeosMessage } from "../util/message";
 import { getAuthHeader } from "../util/userSession";
@@ -21,28 +21,32 @@ export type NeosHubNegotiation = {
   availableTransports: any[];
 };
 
-export async function negotiateHub({
+export async function apiNegotiateHub({
   userSession,
+  overrideBaseUrl,
 }: {
   userSession: NeosUserSessionType;
+  overrideBaseUrl?: string;
 }): Promise<NeosHubNegotiation> {
   return (
     await post(
-      "https://api.neos.com/hub/negotiate",
+      `${overrideBaseUrl ?? BASE_URL}hub/negotiate`,
       {},
       { headers: getAuthHeader(userSession) }
     )
   ).data;
 }
 
-export async function connectHub({
+export async function apiConnectHub({
   userSession,
   eventCallbacks,
+  overrideBaseUrl,
 }: {
   userSession: NeosUserSessionType;
   eventCallbacks?: EventCallbackListType;
+  overrideBaseUrl?: string;
 }): Promise<HubConnection> {
-  const data = await negotiateHub({ userSession });
+  const data = await apiNegotiateHub({ userSession, overrideBaseUrl });
 
   const connection = new HubConnectionBuilder()
     .withUrl(data.url + `&access_token=${data.accessToken}`, {
@@ -70,7 +74,7 @@ export async function connectHub({
   return connection;
 }
 
-export async function sendMessage({
+export async function sendMessageHub({
   connection,
   message,
 }: {
@@ -80,7 +84,7 @@ export async function sendMessage({
   await connection.send("SendMessage", message);
 }
 
-export async function markMessageRead({
+export async function markMessageReadHub({
   connection,
   markReadBatch,
 }: {

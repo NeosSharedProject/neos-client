@@ -1,14 +1,11 @@
 import { HubConnection } from "@microsoft/signalr";
 import { NeosUserSessionType } from "../type/userSession";
-import { connectHub } from "../api/hub";
+import { apiConnectHub } from "../api/hub";
 import { EventEmitter } from "events";
 import { MessageType, NeosMessageType } from "../type/message";
 import { NeosMessageIdType } from "../type/id";
 import { NeosDateStringType } from "../type/common";
-import {
-  MessagesReadEventArgumentType,
-  ReceiveMessageEventArgumentType,
-} from "../type/hub";
+import { MessagesReadEventArgumentType } from "../type/hub";
 import { MessageManager } from "./messageManager";
 import { NeosFriendType } from "../type/friend";
 import { Neos } from ".";
@@ -55,8 +52,9 @@ export class EventManager extends EventEmitter {
   }
 
   async connectHub({ userSession }: { userSession: NeosUserSessionType }) {
-    this.hubConnection = await connectHub({
+    this.hubConnection = await apiConnectHub({
       userSession,
+      overrideBaseUrl: this.neos.overrideBaseUrl,
     });
     this.hubConnection.on("ReceiveMessage", (NeosMessage: NeosMessageType) => {
       const message = parseNeosMessage(NeosMessage);

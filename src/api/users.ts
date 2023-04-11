@@ -4,42 +4,52 @@ import { NeosUserStatusType, NeosUserType } from "../type/user";
 import { NeosUserSessionType } from "../type/userSession";
 import { getAuthHeader } from "../util/userSession";
 
-export async function getUser({
+export async function apiGetUser({
   userSession,
   targetUserId,
+  overrideBaseUrl,
 }: {
   userSession?: NeosUserSessionType;
   targetUserId: string;
+  overrideBaseUrl?: string;
 }): Promise<NeosUserType> {
   const response = await get(
-    `${BASE_URL}api/users/${targetUserId}`,
+    `${overrideBaseUrl ?? BASE_URL}api/users/${targetUserId}`,
     userSession ? { headers: getAuthHeader(userSession) } : {}
   );
   return response.data;
 }
 
-export async function getUserStatus({
+export async function apiGetUserStatus({
   userSession,
   targetUserId,
+  overrideBaseUrl,
 }: {
   userSession?: NeosUserSessionType;
   targetUserId: NeosUserIdType;
+  overrideBaseUrl?: string;
 }): Promise<NeosUserStatusType> {
   const response = await get(
-    `${BASE_URL}api/users/${targetUserId}/status`,
+    `${overrideBaseUrl ?? BASE_URL}api/users/${targetUserId}/status`,
     userSession ? { headers: getAuthHeader(userSession) } : {}
   );
   return response.data;
 }
 
-export async function putUserStatus({
+export async function apiPutUserStatus({
   userSession,
   status,
+  overrideBaseUrl,
 }: {
   userSession: NeosUserSessionType;
   status: NeosUserStatusType;
+  overrideBaseUrl?: string;
 }): Promise<void> {
-  await put(`${BASE_URL}api/users/${userSession.userId}/status`, status, {
-    headers: getAuthHeader(userSession),
-  });
+  await put(
+    `${overrideBaseUrl ?? BASE_URL}api/users/${userSession.userId}/status`,
+    status,
+    {
+      headers: getAuthHeader(userSession),
+    }
+  );
 }
