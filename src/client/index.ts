@@ -19,6 +19,7 @@ import { sendKFC } from "./functions/sendKFC";
 export type NeosClientOption = {
   saveLoginCredential: boolean;
   overrideBaseUrl?: string;
+  overrideHubUrl?: string;
 } & (
   | { useEvents: false; autoSync: false }
   | { useEvents: true; autoSync: boolean }
@@ -34,6 +35,7 @@ export class Neos {
   eventManager?: EventManager;
   currentUser?: NeosUserType;
   overrideBaseUrl?: string;
+  overrideHubUrl?: string;
 
   constructor(
     loginCredential: NeosLoginCredentialType,
@@ -50,6 +52,7 @@ export class Neos {
       autoSync: true,
     };
     this.overrideBaseUrl = option?.overrideBaseUrl;
+    this.overrideHubUrl = option?.overrideHubUrl;
 
     if (this.option.useEvents) {
       this.eventManager = new EventManager(this, {
