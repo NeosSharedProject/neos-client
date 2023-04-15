@@ -89,7 +89,7 @@ export class MessageManager {
     message: string;
   }): Promise<TextMessageType> {
     let msg: TextMessageType;
-    if (this.eventManager.hubConnection) {
+    if (this.eventManager.hubConnection?.state === "Connected") {
       msg = generateTextMessage({
         targetUserId,
         senderUserId: userSession.userId,
