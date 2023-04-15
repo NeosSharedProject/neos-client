@@ -55,6 +55,7 @@ export class EventManager extends EventEmitter {
     this.hubConnection = await apiConnectHub({
       userSession,
       overrideBaseUrl: this.neos.overrideBaseUrl,
+      overrideHubUrl: this.neos.overrideHubUrl,
     });
     this.hubConnection.on("ReceiveMessage", (NeosMessage: NeosMessageType) => {
       const message = parseNeosMessage(NeosMessage);

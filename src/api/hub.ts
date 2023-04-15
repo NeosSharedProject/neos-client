@@ -41,18 +41,28 @@ export async function apiConnectHub({
   userSession,
   eventCallbacks,
   overrideBaseUrl,
+  overrideHubUrl,
 }: {
   userSession: NeosUserSessionType;
   eventCallbacks?: EventCallbackListType;
   overrideBaseUrl?: string;
+  overrideHubUrl?: string;
 }): Promise<HubConnection> {
   const data = await apiNegotiateHub({ userSession, overrideBaseUrl });
 
   const connection = new HubConnectionBuilder()
-    .withUrl(data.url + `&access_token=${data.accessToken}`, {
-      skipNegotiation: true,
-      transport: HttpTransportType.WebSockets,
-    })
+    .withUrl(
+      (overrideHubUrl
+        ? `${overrideHubUrl}${data.url
+            .split("/")
+            .filter((_s, i) => i > 2)
+            .join("/")}`
+        : data.url) + `&access_token=${data.accessToken}`,
+      {
+        skipNegotiation: true,
+        transport: HttpTransportType.WebSockets,
+      }
+    )
     .configureLogging(LogLevel.Error)
     .build();
 
