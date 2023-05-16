@@ -1,8 +1,4 @@
 import { uuidv4 } from "../common";
-import {
-  NeosLoginCredentialType,
-  NeosUserSessionType,
-} from "../type/userSession";
 import { EventManager, EventType } from "./eventManager";
 import { addFriend } from "./functions/addFriend";
 import { getFriends } from "./functions/getFriends";
@@ -13,8 +9,8 @@ import { sendTextMessage } from "./functions/sendTextMessage";
 import { login } from "./functions/login";
 import { logout } from "./functions/logout";
 import { checkSession } from "./functions/checkSession";
-import { NeosUserType } from "../type/user";
 import { sendKFC } from "./functions/sendKFC";
+import * as NeosType from "../type";
 
 export type NeosClientOption = {
   saveLoginCredential: boolean;
@@ -26,19 +22,19 @@ export type NeosClientOption = {
 );
 
 export class Neos {
-  loginCredential: NeosLoginCredentialType & {
+  loginCredential: NeosType.UserSession.NeosLoginCredential & {
     secretMachineId: string;
     rememberMe: true;
   };
   option: Readonly<NeosClientOption>;
-  userSession?: NeosUserSessionType;
+  userSession?: NeosType.UserSession.NeosUserSession;
   eventManager?: EventManager;
-  currentUser?: NeosUserType;
+  currentUser?: NeosType.User.NeosUser;
   overrideBaseUrl?: string;
   overrideHubUrl?: string;
 
   constructor(
-    loginCredential: NeosLoginCredentialType,
+    loginCredential: NeosType.UserSession.NeosLoginCredential,
     option?: NeosClientOption
   ) {
     this.loginCredential = {

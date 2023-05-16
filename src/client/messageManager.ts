@@ -4,23 +4,20 @@ import {
   apiMarkMessageRead,
   apiSendTextMessage,
 } from "../api/messages";
-import { NeosDateStringType } from "../type/common";
-import { NeosMessageIdType, NeosUserIdType } from "../type/id";
-import { MessageType, TextMessageType } from "../type/message";
-import { NeosUserSessionType } from "../type/userSession";
 import { generateTextMessage } from "../util/message";
 import { EventManager } from "./eventManager";
 import { apiSendKFC } from "../api/messages";
+import * as NeosType from "../type";
 
 export class MessageManager {
-  localMessages?: MessageType[];
+  localMessages?: NeosType.Message.Message[];
   eventManager: EventManager;
 
   constructor(eventManager: EventManager) {
     this.eventManager = eventManager;
   }
 
-  _addLocalMessage({ message }: { message: MessageType }) {
+  _addLocalMessage({ message }: { message: NeosType.Message.Message }) {
     if (
       this.localMessages &&
       !this.localMessages.some((msg) => msg.id === message.id)
@@ -34,8 +31,8 @@ export class MessageManager {
     messageIds,
     readTime,
   }: {
-    messageIds: NeosMessageIdType[];
-    readTime: NeosDateStringType;
+    messageIds: NeosType.Id.NeosMessageId[];
+    readTime: NeosType.Common.NeosDateString;
   }) {
     this.localMessages = this.localMessages?.map((message) =>
       messageIds.some((id) => id === message.id)
@@ -50,7 +47,7 @@ export class MessageManager {
   public async syncMessages({
     userSession,
   }: {
-    userSession: NeosUserSessionType;
+    userSession: NeosType.UserSession.NeosUserSession;
   }): Promise<void> {
     this.localMessages = await apiGetMessages({
       userSession,
@@ -64,8 +61,8 @@ export class MessageManager {
     targetUserId,
     fromTime,
   }: {
-    userSession: NeosUserSessionType;
-    targetUserId: NeosUserIdType;
+    userSession: NeosType.UserSession.NeosUserSession;
+    targetUserId: NeosType.Id.NeosUserId;
     fromTime?: Date;
   }) {
     const userMessages = await apiGetMessages({
@@ -84,11 +81,11 @@ export class MessageManager {
     targetUserId,
     message,
   }: {
-    userSession: NeosUserSessionType;
-    targetUserId: NeosUserIdType;
+    userSession: NeosType.UserSession.NeosUserSession;
+    targetUserId: NeosType.Id.NeosUserId;
     message: string;
-  }): Promise<TextMessageType> {
-    let msg: TextMessageType;
+  }): Promise<NeosType.Message.TextMessage> {
+    let msg: NeosType.Message.TextMessage;
     if (this.eventManager.hubConnection?.state === "Connected") {
       msg = generateTextMessage({
         targetUserId,
@@ -118,8 +115,8 @@ export class MessageManager {
     comment,
     totp,
   }: {
-    userSession: NeosUserSessionType;
-    targetUserId: NeosUserIdType;
+    userSession: NeosType.UserSession.NeosUserSession;
+    targetUserId: NeosType.Id.NeosUserId;
     amount: number;
     comment?: string;
     totp?: string;
@@ -145,9 +142,9 @@ export class MessageManager {
     userSession,
     messageIds,
   }: {
-    userSession: NeosUserSessionType;
-    messageIds: NeosMessageIdType[];
-  }): Promise<NeosMessageIdType[]> {
+    userSession: NeosType.UserSession.NeosUserSession;
+    messageIds: NeosType.Id.NeosMessageId[];
+  }): Promise<NeosType.Id.NeosMessageId[]> {
     const readTime = new Date().toISOString();
     this._readLocalMessages({ messageIds, readTime });
     this.eventManager.emit("MessagesRead", messageIds, readTime);

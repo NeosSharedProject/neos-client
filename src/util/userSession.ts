@@ -1,20 +1,18 @@
-import { NeosUserIdType } from "../type/id";
-import {
-  NeosLoginCredentialType,
-  NeosUserSessionType,
-} from "../type/userSession";
+import * as NeosType from "../type";
 
-export function getAuthHeader(userSession: NeosUserSessionType) {
+export function getAuthHeader(
+  userSession: NeosType.UserSession.NeosUserSession
+) {
   return {
     Authorization: `neos ${userSession.userId}:${userSession.token}`,
   };
 }
 
 export function isPasswordCredential(
-  loginCredential: NeosLoginCredentialType
+  loginCredential: NeosType.UserSession.NeosLoginCredential
 ): loginCredential is
   | {
-      ownerId: NeosUserIdType;
+      ownerId: NeosType.Id.NeosUserId;
       password: string;
       rememberMe?: boolean;
       secretMachineId?: string;

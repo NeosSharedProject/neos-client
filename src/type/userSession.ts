@@ -1,8 +1,8 @@
-import { NeosUserIdType } from "./id";
+import * as NeosType from "./index";
 
-export type NeosLoginCredentialType =
+export type NeosLoginCredential =
   | {
-      ownerId: NeosUserIdType;
+      ownerId: NeosType.Id.NeosUserId;
       password: string;
       rememberMe?: boolean;
       secretMachineId?: string;
@@ -20,13 +20,13 @@ export type NeosLoginCredentialType =
       secretMachineId?: string;
     }
   | {
-      ownerId: NeosUserIdType;
+      ownerId: NeosType.Id.NeosUserId;
       sessionCode: string;
       secretMachineId: string;
     };
 
-export type NeosUserSessionType = {
-  userId: NeosUserIdType;
+export type NeosUserSession = {
+  userId: NeosType.Id.NeosUserId;
   token: string;
   created: string;
   expire: string;

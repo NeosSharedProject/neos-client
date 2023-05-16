@@ -1,10 +1,10 @@
 import { Neos } from "..";
 import { apiAddFriend } from "../../api/friends";
-import { NeosUserIdType } from "../../type/id";
+import * as NeosType from "../../type";
 
 export async function addFriend(
   this: Neos,
-  { targetUserId }: { targetUserId: NeosUserIdType }
+  { targetUserId }: { targetUserId: NeosType.Id.NeosUserId }
 ): Promise<void> {
   await this.checkSession();
   if (!this.userSession) {

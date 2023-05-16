@@ -1,15 +1,15 @@
 import { Neos } from "..";
 import { apiMarkMessageRead } from "../../api/messages";
-import { NeosMessageIdType } from "../../type/id";
+import * as NeosType from "../../type";
 
 export async function readMessages(
   this: Neos,
   {
     messageIds,
   }: {
-    messageIds: NeosMessageIdType[];
+    messageIds: NeosType.Id.NeosMessageId[];
   }
-): Promise<NeosMessageIdType[]> {
+): Promise<NeosType.Id.NeosMessageId[]> {
   await this.checkSession();
   if (!this.userSession) {
     throw new Error("userSession error");

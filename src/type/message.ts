@@ -1,101 +1,93 @@
-import { NeosDateStringType, NeosUriType } from "./common";
-import {
-  NeosMachineIdType,
-  NeosMessageIdType,
-  NeosOwnerIdType,
-  NeosRecordIdType,
-  NeosSessionIdType,
-  NeosUserIdType,
-} from "./id";
+import * as NeosType from "./index";
 
-export type NeosTextMessageType = {
-  id: NeosMessageIdType;
-  ownerId: NeosUserIdType;
-  recipientId: NeosUserIdType;
-  senderId: NeosUserIdType;
+export type NeosTextMessage = {
+  id: NeosType.Id.NeosMessageId;
+  ownerId: NeosType.Id.NeosUserId;
+  recipientId: NeosType.Id.NeosUserId;
+  senderId: NeosType.Id.NeosUserId;
   messageType: "Text";
   content: string;
-  sendTime: NeosDateStringType;
-  lastUpdateTime: NeosDateStringType;
-  readTime: NeosDateStringType | null;
+  sendTime: NeosType.Common.NeosDateString;
+  lastUpdateTime: NeosType.Common.NeosDateString;
+  readTime: NeosType.Common.NeosDateString | null;
 };
 
-export type NeosObjectMessageType = {
-  id: NeosMessageIdType;
-  ownerId: NeosUserIdType;
-  recipientId: NeosUserIdType;
-  senderId: NeosUserIdType;
+export type NeosObjectMessage = {
+  id: NeosType.Id.NeosMessageId;
+  ownerId: NeosType.Id.NeosUserId;
+  recipientId: NeosType.Id.NeosUserId;
+  senderId: NeosType.Id.NeosUserId;
   messageType: "Object";
   content: string;
-  sendTime: NeosDateStringType;
-  lastUpdateTime: NeosDateStringType;
-  readTime: NeosDateStringType | null;
+  sendTime: NeosType.Common.NeosDateString;
+  lastUpdateTime: NeosType.Common.NeosDateString;
+  readTime: NeosType.Common.NeosDateString | null;
 };
 
-export type NeosCreditTransferMessageType = {
-  id: NeosMessageIdType;
-  ownerId: NeosUserIdType;
-  recipientId: NeosUserIdType;
-  senderId: NeosUserIdType;
+export type NeosCreditTransferMessage = {
+  id: NeosType.Id.NeosMessageId;
+  ownerId: NeosType.Id.NeosUserId;
+  recipientId: NeosType.Id.NeosUserId;
+  senderId: NeosType.Id.NeosUserId;
   messageType: "CreditTransfer";
   content: string;
-  sendTime: NeosDateStringType;
-  lastUpdateTime: NeosDateStringType;
-  readTime: NeosDateStringType | null;
+  sendTime: NeosType.Common.NeosDateString;
+  lastUpdateTime: NeosType.Common.NeosDateString;
+  readTime: NeosType.Common.NeosDateString | null;
 };
 
-export type NeosSessionInviteMessageType = {
-  id: NeosMessageIdType;
-  ownerId: NeosUserIdType;
-  recipientId: NeosUserIdType;
-  senderId: NeosUserIdType;
+export type NeosSessionInviteMessage = {
+  id: NeosType.Id.NeosMessageId;
+  ownerId: NeosType.Id.NeosUserId;
+  recipientId: NeosType.Id.NeosUserId;
+  senderId: NeosType.Id.NeosUserId;
   messageType: "SessionInvite";
   content: string;
-  sendTime: NeosDateStringType;
-  lastUpdateTime: NeosDateStringType;
-  readTime: NeosDateStringType | null;
+  sendTime: NeosType.Common.NeosDateString;
+  lastUpdateTime: NeosType.Common.NeosDateString;
+  readTime: NeosType.Common.NeosDateString | null;
 };
 
-export type NeosSoundMessageType = {
-  id: NeosMessageIdType;
-  ownerId: NeosUserIdType;
-  recipientId: NeosUserIdType;
-  senderId: NeosUserIdType;
+export type NeosSoundMessage = {
+  id: NeosType.Id.NeosMessageId;
+  ownerId: NeosType.Id.NeosUserId;
+  recipientId: NeosType.Id.NeosUserId;
+  senderId: NeosType.Id.NeosUserId;
   messageType: "Sound";
   content: string;
-  sendTime: NeosDateStringType;
-  lastUpdateTime: NeosDateStringType;
-  readTime: NeosDateStringType | null;
+  sendTime: NeosType.Common.NeosDateString;
+  lastUpdateTime: NeosType.Common.NeosDateString;
+  readTime: NeosType.Common.NeosDateString | null;
 };
 
-export type NeosMessageType =
-  | NeosTextMessageType
-  | NeosObjectMessageType
-  | NeosCreditTransferMessageType
-  | NeosSessionInviteMessageType
-  | NeosSoundMessageType;
+export type NeosMessage =
+  | NeosTextMessage
+  | NeosObjectMessage
+  | NeosCreditTransferMessage
+  | NeosSessionInviteMessage
+  | NeosSoundMessage;
 
-export type TextMessageContentType = string;
+export type TextMessageContent = string;
 
-export type ObjectMessageContentType = {
-  id: NeosRecordIdType;
-  ownerId: NeosOwnerIdType;
-  assetUri: NeosUriType;
+export type ObjectMessageContent = {
+  id: NeosType.Id.NeosRecordId;
+  ownerId: NeosType.Id.NeosOwnerId;
+  assetUri: NeosType.Common.NeosUri;
   globalVersion: number;
   localVersion: number;
-  lastModifyingUserId: NeosUserIdType;
-  lastModifyingMachineId: NeosMachineIdType;
+  lastModifyingUserId: NeosType.Id.NeosUserId;
+  lastModifyingMachineId: NeosType.Id.NeosMachineId;
   name: string;
   recordType: "object";
   ownerName: null | string;
   tags: string[];
   path: null | string;
-  thumbnailUri: NeosUriType;
+  thumbnailUri: NeosType.Common.NeosUri;
   isPublic: boolean;
   isForPatrons: boolean;
   isListed: boolean;
-  lastModificationTime: NeosDateStringType;
-  creationTime: NeosDateStringType;
+  lastModificationTime: NeosType.Common.NeosDateString;
+  creationTime: NeosType.Common.NeosDateString;
   firstPublishTime: null;
   visits: number;
   rating: number;
@@ -103,53 +95,53 @@ export type ObjectMessageContentType = {
   submissions: null;
 };
 
-export type CreditTransferMessageContentType = {
+export type CreditTransferMessageContent = {
   token: "KFC" | "NCR";
-  recipientId: NeosUserIdType;
+  recipientId: NeosType.Id.NeosUserId;
   amount: number;
   comment: string;
   transactionType: "User2User" | "Tip" | "Deposit";
 };
 
-export type SessionInviteMessageContentType = {
+export type SessionInviteMessageContent = {
   name: string;
   description: string | null;
   correspondingWorldId: string | null;
   tags: string[];
-  sessionId: NeosSessionIdType;
+  sessionId: NeosType.Id.NeosSessionId;
   normalizedSessionId: string;
-  hostUserId: NeosUserIdType;
-  hostMachineId: NeosMachineIdType;
+  hostUserId: NeosType.Id.NeosUserId;
+  hostMachineId: NeosType.Id.NeosMachineId;
   hostUsername: string;
   compatibilityHash: string;
   universeId: null | string;
   neosVersion: string;
   headlessHost: boolean;
-  sessionURLs: NeosUriType[];
+  sessionURLs: NeosType.Common.NeosUri[];
   parentSessionIds: null | string[];
   nestedSessionIds: null | string[];
-  sessionUsers: [] | NeosUserIdType[];
-  thumbnail: NeosUriType;
+  sessionUsers: [] | NeosType.Id.NeosUserId[];
+  thumbnail: NeosType.Common.NeosUri;
   joinedUsers: number;
   activeUsers: number;
   totalJoinedUsers: number;
   totalActiveUsers: number;
   maxUsers: number;
   mobileFriendly: boolean;
-  sessionBeginTime: NeosDateStringType;
-  lastUpdate: NeosDateStringType;
+  sessionBeginTime: NeosType.Common.NeosDateString;
+  lastUpdate: NeosType.Common.NeosDateString;
   awaySince: null;
   accessLevel: "Private" | "";
 };
 
-export type SoundMessageContentType = {
-  id: NeosRecordIdType;
-  ownerId: NeosUserIdType;
-  assetUri: NeosUriType;
+export type SoundMessageContent = {
+  id: NeosType.Id.NeosRecordId;
+  ownerId: NeosType.Id.NeosUserId;
+  assetUri: NeosType.Common.NeosUri;
   globalVersion: number;
   localVersion: number;
-  lastModifyingUserId: NeosUserIdType;
-  lastModifyingMachineId: NeosMachineIdType;
+  lastModifyingUserId: NeosType.Id.NeosUserId;
+  lastModifyingMachineId: NeosType.Id.NeosMachineId;
   name: string;
   recordType: "audio";
   ownerName: null;
@@ -158,9 +150,9 @@ export type SoundMessageContentType = {
   isPublic: boolean;
   isForPatrons: boolean;
   isListed: boolean;
-  lastModificationTime: NeosDateStringType;
-  creationTime: NeosDateStringType;
-  firstPublishTime: null | NeosDateStringType;
+  lastModificationTime: NeosType.Common.NeosDateString;
+  creationTime: NeosType.Common.NeosDateString;
+  firstPublishTime: null | NeosType.Common.NeosDateString;
   visits: number;
   rating: number;
   randomOrder: number;
@@ -171,34 +163,33 @@ export type SoundMessageContentType = {
   }[];
 };
 
-type _NotContentMessageType<M extends NeosMessageType> = Omit<M, "content">;
+type _NotContentMessage<M extends NeosMessage> = Omit<M, "content">;
 
-export type TextMessageType = _NotContentMessageType<NeosTextMessageType> & {
-  content: TextMessageContentType;
+export type TextMessage = _NotContentMessage<NeosTextMessage> & {
+  content: TextMessageContent;
 };
 
-export type ObjectMessageType =
-  _NotContentMessageType<NeosObjectMessageType> & {
-    content: ObjectMessageContentType;
-  };
-
-export type CreditTransferMessageType =
-  _NotContentMessageType<NeosCreditTransferMessageType> & {
-    content: CreditTransferMessageContentType;
-  };
-
-export type SessionInviteMessageType =
-  _NotContentMessageType<NeosSessionInviteMessageType> & {
-    content: SessionInviteMessageContentType;
-  };
-
-export type SoundMessageType = _NotContentMessageType<NeosSoundMessageType> & {
-  content: SoundMessageContentType;
+export type ObjectMessage = _NotContentMessage<NeosObjectMessage> & {
+  content: ObjectMessageContent;
 };
 
-export type MessageType =
-  | TextMessageType
-  | ObjectMessageType
-  | CreditTransferMessageType
-  | SessionInviteMessageType
-  | SoundMessageType;
+export type CreditTransferMessage =
+  _NotContentMessage<NeosCreditTransferMessage> & {
+    content: CreditTransferMessageContent;
+  };
+
+export type SessionInviteMessage =
+  _NotContentMessage<NeosSessionInviteMessage> & {
+    content: SessionInviteMessageContent;
+  };
+
+export type SoundMessage = _NotContentMessage<NeosSoundMessage> & {
+  content: SoundMessageContent;
+};
+
+export type Message =
+  | TextMessage
+  | ObjectMessage
+  | CreditTransferMessage
+  | SessionInviteMessage
+  | SoundMessage;

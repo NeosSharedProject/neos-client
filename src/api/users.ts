@@ -1,21 +1,39 @@
 import { BASE_URL, get, put } from "../common";
-import { NeosUserIdType } from "../type/id";
-import { NeosUserStatusType, NeosUserType } from "../type/user";
-import { NeosUserSessionType } from "../type/userSession";
-import { getAuthHeader } from "../util/userSession";
+import * as NeosUtil from "../util";
+import * as NeosType from "../type";
 
 export async function apiGetUser({
   userSession,
   targetUserId,
   overrideBaseUrl,
 }: {
-  userSession?: NeosUserSessionType;
+  userSession?: NeosType.UserSession.NeosUserSession;
   targetUserId: string;
   overrideBaseUrl?: string;
-}): Promise<NeosUserType> {
+}): Promise<NeosType.User.NeosUser> {
   const response = await get(
     `${overrideBaseUrl ?? BASE_URL}api/users/${targetUserId}`,
-    userSession ? { headers: getAuthHeader(userSession) } : {}
+    userSession
+      ? { headers: NeosUtil.UserSession.getAuthHeader(userSession) }
+      : {}
+  );
+  return response.data;
+}
+
+export async function apiFindUsers({
+  userSession,
+  keyword,
+  overrideBaseUrl,
+}: {
+  userSession?: NeosType.UserSession.NeosUserSession;
+  keyword: string;
+  overrideBaseUrl?: string;
+}): Promise<NeosType.User.NeosUser[]> {
+  const response = await get(
+    `${overrideBaseUrl ?? BASE_URL}api/users?name=${keyword}`,
+    userSession
+      ? { headers: NeosUtil.UserSession.getAuthHeader(userSession) }
+      : {}
   );
   return response.data;
 }
@@ -25,13 +43,15 @@ export async function apiGetUserStatus({
   targetUserId,
   overrideBaseUrl,
 }: {
-  userSession?: NeosUserSessionType;
-  targetUserId: NeosUserIdType;
+  userSession?: NeosType.UserSession.NeosUserSession;
+  targetUserId: NeosType.Id.NeosUserId;
   overrideBaseUrl?: string;
-}): Promise<NeosUserStatusType> {
+}): Promise<NeosType.User.NeosUserStatus> {
   const response = await get(
     `${overrideBaseUrl ?? BASE_URL}api/users/${targetUserId}/status`,
-    userSession ? { headers: getAuthHeader(userSession) } : {}
+    userSession
+      ? { headers: NeosUtil.UserSession.getAuthHeader(userSession) }
+      : {}
   );
   return response.data;
 }
@@ -41,15 +61,15 @@ export async function apiPutUserStatus({
   status,
   overrideBaseUrl,
 }: {
-  userSession: NeosUserSessionType;
-  status: NeosUserStatusType;
+  userSession: NeosType.UserSession.NeosUserSession;
+  status: NeosType.User.NeosUserStatus;
   overrideBaseUrl?: string;
 }): Promise<void> {
   await put(
     `${overrideBaseUrl ?? BASE_URL}api/users/${userSession.userId}/status`,
     status,
     {
-      headers: getAuthHeader(userSession),
+      headers: NeosUtil.UserSession.getAuthHeader(userSession),
     }
   );
 }

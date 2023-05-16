@@ -1,22 +1,20 @@
-import { NeosDateStringType } from "./common";
-import { NeosMessageIdType, NeosUserIdType } from "./id";
-import { MessageType } from "./message";
+import * as NeosType from "./";
 
-export type ReceiveMessageEventArgumentType = MessageType;
+export type ReceiveMessageEventArgument = NeosType.Message.Message;
 
-export type MessagesReadEventArgumentType = {
-  recipientId: NeosUserIdType;
-  readTime: NeosDateStringType;
-  ids: NeosMessageIdType[];
+export type MessagesReadEventArgument = {
+  recipientId: NeosType.Id.NeosUserId;
+  readTime: NeosType.Common.NeosDateString;
+  ids: NeosType.Id.NeosMessageId[];
 };
 
-export type EventCallbackListType = (
+export type EventCallbackList = (
   | {
       methodName: "ReceiveMessage";
-      callback: (data: ReceiveMessageEventArgumentType) => any;
+      callback: (data: ReceiveMessageEventArgument) => any;
     }
   | {
       methodName: "MessagesRead";
-      callback: (data: MessagesReadEventArgumentType) => any;
+      callback: (data: MessagesReadEventArgument) => any;
     }
 )[];

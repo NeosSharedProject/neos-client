@@ -1,7 +1,6 @@
 import { Neos } from "..";
-import { NeosUserIdType } from "../../type/id";
-import { MessageType } from "../../type/message";
 import { apiGetMessages } from "../../api/messages";
+import * as NeosType from "../../type";
 
 export async function getMessages(
   this: Neos,
@@ -10,11 +9,11 @@ export async function getMessages(
     unReadOnly,
     fromTime,
   }: {
-    targetUserId?: NeosUserIdType;
+    targetUserId?: NeosType.Id.NeosUserId;
     unReadOnly?: boolean;
     fromTime?: Date;
   }
-): Promise<MessageType[]> {
+): Promise<NeosType.Message.Message[]> {
   await this.checkSession();
   if (!this.userSession) {
     throw new Error("userSession error");
