@@ -1,11 +1,9 @@
 import { apiAddFriend, apiGetFriends } from "../api/friends";
-import { NeosFriendType } from "../type/friend";
-import { NeosUserIdType } from "../type/id";
-import { NeosUserSessionType } from "../type/userSession";
 import { EventManager } from "./eventManager";
+import * as NeosType from "../type";
 
 export class FriendManager {
-  localFriends?: NeosFriendType[];
+  localFriends?: NeosType.Friend.NeosFriend[];
   eventManager: EventManager;
 
   constructor(eventManager: EventManager) {
@@ -15,7 +13,7 @@ export class FriendManager {
   public async syncFriends({
     userSession,
   }: {
-    userSession: NeosUserSessionType;
+    userSession: NeosType.UserSession.NeosUserSession;
   }): Promise<void> {
     const friends = await apiGetFriends({
       userSession,
@@ -52,8 +50,8 @@ export class FriendManager {
     userSession,
     targetUserId,
   }: {
-    userSession: NeosUserSessionType;
-    targetUserId: NeosUserIdType;
+    userSession: NeosType.UserSession.NeosUserSession;
+    targetUserId: NeosType.Id.NeosUserId;
   }): Promise<void> {
     await apiAddFriend({
       userSession,

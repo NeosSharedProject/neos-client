@@ -1,4 +1,4 @@
-export type NeosDateStringType = string;
-export type NeosVersionType = string;
-export type NeosUriType = string;
-export type NeosSessionUrlType = string;
+export type NeosDateString = string;
+export type NeosVersion = string;
+export type NeosUri = string;
+export type NeosSessionUrl = string;

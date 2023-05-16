@@ -1,15 +1,15 @@
-export type NeosIdType<T extends string> = `${T}-${string}`;
+export type NeosId<T extends string> = `${T}-${string}`;
 
-export type NeosUserIdType = NeosIdType<"U">;
+export type NeosUserId = NeosId<"U">;
 
-export type NeosGroupIdType = NeosIdType<"G">;
+export type NeosGroupId = NeosId<"G">;
 
-export type NeosOwnerIdType = NeosUserIdType | NeosGroupIdType;
+export type NeosOwnerId = NeosUserId | NeosGroupId;
 
-export type NeosRecordIdType = NeosIdType<"R">;
+export type NeosRecordId = NeosId<"R">;
 
-export type NeosMessageIdType = NeosIdType<"MSG">;
+export type NeosMessageId = NeosId<"MSG">;
 
-export type NeosSessionIdType = NeosIdType<"S">;
+export type NeosSessionId = NeosId<"S">;
 
-export type NeosMachineIdType = string;
+export type NeosMachineId = string;

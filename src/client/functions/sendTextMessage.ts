@@ -1,7 +1,6 @@
 import { Neos } from "..";
-import { NeosUserIdType } from "../../type/id";
-import { TextMessageType } from "../../type/message";
 import { apiSendTextMessage } from "../../api/messages";
+import * as NeosType from "../../type";
 
 export async function sendTextMessage(
   this: Neos,
@@ -9,10 +8,10 @@ export async function sendTextMessage(
     targetUserId,
     message,
   }: {
-    targetUserId: NeosUserIdType;
+    targetUserId: NeosType.Id.NeosUserId;
     message: string;
   }
-): Promise<TextMessageType> {
+): Promise<NeosType.Message.TextMessage> {
   await this.checkSession();
   if (!this.userSession) {
     throw new Error("userSession error");

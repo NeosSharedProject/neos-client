@@ -1,19 +1,18 @@
 import { BASE_URL, get, put } from "../common";
-import { NeosFriendType } from "../type/friend";
-import { NeosUserSessionType } from "../type/userSession";
-import { getAuthHeader } from "../util/userSession";
+import * as NeosUtil from "../util";
+import * as NeosType from "../type";
 
 export async function apiGetFriends({
   userSession,
   overrideBaseUrl,
 }: {
-  userSession: NeosUserSessionType;
+  userSession: NeosType.UserSession.NeosUserSession;
   overrideBaseUrl?: string;
-}): Promise<NeosFriendType[]> {
+}): Promise<NeosType.Friend.NeosFriend[]> {
   const response = await get(
     `${overrideBaseUrl ?? BASE_URL}api/users/${userSession.userId}/friends`,
     {
-      headers: getAuthHeader(userSession),
+      headers: NeosUtil.UserSession.getAuthHeader(userSession),
     }
   );
   return response.data;
@@ -24,7 +23,7 @@ export async function apiAddFriend({
   targetUserId,
   overrideBaseUrl,
 }: {
-  userSession: NeosUserSessionType;
+  userSession: NeosType.UserSession.NeosUserSession;
   targetUserId: string;
   overrideBaseUrl?: string;
 }) {
@@ -34,7 +33,7 @@ export async function apiAddFriend({
     }/friends/${targetUserId}`,
     { id: targetUserId, friendStatus: "Accepted" },
     {
-      headers: getAuthHeader(userSession),
+      headers: NeosUtil.UserSession.getAuthHeader(userSession),
     }
   );
   return response.data;

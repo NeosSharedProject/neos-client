@@ -1,30 +1,40 @@
 import { HubConnection } from "@microsoft/signalr";
-import { NeosUserSessionType } from "../type/userSession";
 import { apiConnectHub } from "../api/hub";
 import { EventEmitter } from "events";
-import { MessageType, NeosMessageType } from "../type/message";
-import { NeosMessageIdType } from "../type/id";
-import { NeosDateStringType } from "../type/common";
-import { MessagesReadEventArgumentType } from "../type/hub";
 import { MessageManager } from "./messageManager";
-import { NeosFriendType } from "../type/friend";
 import { Neos } from ".";
 import { FriendManager } from "./friendManager";
 import { parseNeosMessage } from "../util/message";
+import * as NeosType from "../type";
 
 export type EventType =
-  | [eventName: "MessageReceived", listener: (message: MessageType) => any]
+  | [
+      eventName: "MessageReceived",
+      listener: (message: NeosType.Message.Message) => any
+    ]
   | [
       eventName: "MessagesRead",
       listener: (
-        messageIds: NeosMessageIdType[],
-        readTime: NeosDateStringType
+        messageIds: NeosType.Id.NeosMessageId[],
+        readTime: NeosType.Common.NeosDateString
       ) => any
     ]
-  | [eventName: "MessagesUpdated", listener: (messages: MessageType[]) => any]
-  | [eventName: "FriendRequested", listener: (friend: NeosFriendType) => any]
-  | [eventName: "FriendOnline", listener: (friend: NeosFriendType) => any]
-  | [eventName: "FriendsUpdated", listener: (friends: NeosFriendType[]) => any]
+  | [
+      eventName: "MessagesUpdated",
+      listener: (messages: NeosType.Message.Message[]) => any
+    ]
+  | [
+      eventName: "FriendRequested",
+      listener: (friend: NeosType.Friend.NeosFriend) => any
+    ]
+  | [
+      eventName: "FriendOnline",
+      listener: (friend: NeosType.Friend.NeosFriend) => any
+    ]
+  | [
+      eventName: "FriendsUpdated",
+      listener: (friends: NeosType.Friend.NeosFriend[]) => any
+    ]
   | [eventName: "Login", listener: () => any]
   | [eventName: "Logout", listener: () => any];
 
@@ -51,22 +61,29 @@ export class EventManager extends EventEmitter {
     return super.emit(eventName, ...args);
   }
 
-  async connectHub({ userSession }: { userSession: NeosUserSessionType }) {
+  async connectHub({
+    userSession,
+  }: {
+    userSession: NeosType.UserSession.NeosUserSession;
+  }) {
     this.hubConnection = await apiConnectHub({
       userSession,
       overrideBaseUrl: this.neos.overrideBaseUrl,
       overrideHubUrl: this.neos.overrideHubUrl,
     });
-    this.hubConnection.on("ReceiveMessage", (NeosMessage: NeosMessageType) => {
-      const message = parseNeosMessage(NeosMessage);
-      this.messageManager?._addLocalMessage({
-        message,
-      });
-      this.emit("MessageReceived", message);
-    });
+    this.hubConnection.on(
+      "ReceiveMessage",
+      (NeosMessage: NeosType.Message.NeosMessage) => {
+        const message = parseNeosMessage(NeosMessage);
+        this.messageManager?._addLocalMessage({
+          message,
+        });
+        this.emit("MessageReceived", message);
+      }
+    );
     this.hubConnection.on(
       "MessagesRead",
-      ({ ids, readTime }: MessagesReadEventArgumentType) => {
+      ({ ids, readTime }: NeosType.Hub.MessagesReadEventArgument) => {
         this.messageManager?._readLocalMessages({ messageIds: ids, readTime });
         this.emit("MessagesRead", ids, readTime);
       }

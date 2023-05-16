@@ -1,6 +1,6 @@
 import { Neos } from "..";
-import { NeosUserIdType } from "../../type/id";
 import { apiSendKFC } from "../../api/messages";
+import * as NeosType from "../../type";
 
 export async function sendKFC(
   this: Neos,
@@ -10,7 +10,7 @@ export async function sendKFC(
     comment,
     totp,
   }: {
-    targetUserId: NeosUserIdType;
+    targetUserId: NeosType.Id.NeosUserId;
     amount: number;
     comment?: string;
     totp?: string;

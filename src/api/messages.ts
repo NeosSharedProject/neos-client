@@ -1,9 +1,7 @@
 import { BASE_URL, get, post, uuidv4, patch } from "../common";
-import { NeosMessageIdType, NeosUserIdType } from "../type/id";
-import { MessageType, NeosMessageType, TextMessageType } from "../type/message";
-import { NeosUserSessionType } from "../type/userSession";
 import { generateTextMessage, parseNeosMessage } from "../util/message";
-import { getAuthHeader } from "../util/userSession";
+import * as NeosUtil from "../util";
+import * as NeosType from "../type";
 
 export async function apiGetMessages({
   userSession,
@@ -12,21 +10,23 @@ export async function apiGetMessages({
   fromTime,
   overrideBaseUrl,
 }: {
-  userSession: NeosUserSessionType;
-  targetUserId?: NeosUserIdType;
+  userSession: NeosType.UserSession.NeosUserSession;
+  targetUserId?: NeosType.Id.NeosUserId;
   unReadOnly?: boolean;
   fromTime?: Date;
   overrideBaseUrl?: string;
-}): Promise<MessageType[]> {
+}): Promise<NeosType.Message.Message[]> {
   const res = await get(
     `${overrideBaseUrl ?? BASE_URL}api/users/${userSession.userId}/messages?${
       targetUserId ? `user=${targetUserId}&` : ""
     }${unReadOnly ? "unread=true&" : ""}${
       fromTime ? `fromTime=${fromTime?.toUTCString()}&` : ""
     }`,
-    { headers: getAuthHeader(userSession) }
+    { headers: NeosUtil.UserSession.getAuthHeader(userSession) }
   );
-  return res.data.map((message: NeosMessageType) => parseNeosMessage(message));
+  return res.data.map((message: NeosType.Message.NeosMessage) =>
+    parseNeosMessage(message)
+  );
 }
 
 export async function apiSendTextMessage({
@@ -35,11 +35,11 @@ export async function apiSendTextMessage({
   message,
   overrideBaseUrl,
 }: {
-  userSession: NeosUserSessionType;
-  targetUserId: NeosUserIdType;
+  userSession: NeosType.UserSession.NeosUserSession;
+  targetUserId: NeosType.Id.NeosUserId;
   message: string;
   overrideBaseUrl?: string;
-}): Promise<TextMessageType> {
+}): Promise<NeosType.Message.TextMessage> {
   const body = generateTextMessage({
     targetUserId,
     senderUserId: userSession.userId,
@@ -49,7 +49,7 @@ export async function apiSendTextMessage({
     `${overrideBaseUrl ?? BASE_URL}api/users/${targetUserId}/messages`,
     body,
     {
-      headers: getAuthHeader(userSession),
+      headers: NeosUtil.UserSession.getAuthHeader(userSession),
     }
   );
   return body;
@@ -60,14 +60,14 @@ export async function apiMarkMessageRead({
   userSession,
   overrideBaseUrl,
 }: {
-  messageIds: NeosMessageIdType[];
-  userSession: NeosUserSessionType;
+  messageIds: NeosType.Id.NeosMessageId[];
+  userSession: NeosType.UserSession.NeosUserSession;
   overrideBaseUrl?: string;
-}): Promise<NeosMessageIdType[]> {
+}): Promise<NeosType.Id.NeosMessageId[]> {
   await patch(
     `${overrideBaseUrl ?? BASE_URL}api/users/${userSession.userId}/messages/`,
     messageIds,
-    { headers: getAuthHeader(userSession) }
+    { headers: NeosUtil.UserSession.getAuthHeader(userSession) }
   );
   return messageIds;
 }
@@ -80,7 +80,7 @@ export async function apiSendKFC({
   totp,
   overrideBaseUrl,
 }: {
-  userSession: NeosUserSessionType;
+  userSession: NeosType.UserSession.NeosUserSession;
   targetUserId: string;
   amount: number;
   comment?: string;
@@ -98,6 +98,11 @@ export async function apiSendKFC({
       transactionType: "User2User",
       anonymous: false,
     },
-    { headers: { ...getAuthHeader(userSession), TOTP: totp } }
+    {
+      headers: {
+        ...NeosUtil.UserSession.getAuthHeader(userSession),
+        TOTP: totp,
+      },
+    }
   );
 }

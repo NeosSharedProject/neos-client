@@ -30,3 +30,23 @@ neos.on("FriendRequested", (friend) => {
 
 neos.login();
 ```
+
+```js
+const { NeosAPI } = "neos-client";
+
+async function main() {
+  const users = await NeosAPI.Users.apiFindUsers({ keyword: "NeosVR" });
+  console.log(users.map((u) => u.username));
+
+  const sessions = await NeosAPI.Sessions.apiGetSessions({});
+  console.log(sessions.map((s) => s.name));
+
+  const records = await NeosAPI.Records.apiGetRecordsFromPath({
+    ownerId: "G-Neos",
+    path: "Inventory\\Neos Essentials\\Mirror",
+  });
+  console.log(records.map((r) => r.name));
+}
+
+main();
+```

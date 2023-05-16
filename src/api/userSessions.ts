@@ -1,17 +1,15 @@
 import { BASE_URL, httpDelete, post } from "../common";
-import {
-  NeosLoginCredentialType,
-  NeosUserSessionType,
-} from "../type/userSession";
-import { getAuthHeader } from "../util/userSession";
+import * as NeosUtil from "../util";
+
+import * as NeosType from "../type";
 
 export async function apiPostUserSession({
   loginCredential,
   overrideBaseUrl,
 }: {
-  loginCredential: NeosLoginCredentialType;
+  loginCredential: NeosType.UserSession.NeosLoginCredential;
   overrideBaseUrl?: string;
-}): Promise<NeosUserSessionType> {
+}): Promise<NeosType.UserSession.NeosUserSession> {
   const response = await post(
     `${overrideBaseUrl ?? BASE_URL}api/userSessions`,
     loginCredential
@@ -26,7 +24,7 @@ export async function apiDeleteUserSession({
   userSession,
   overrideBaseUrl,
 }: {
-  userSession: NeosUserSessionType;
+  userSession: NeosType.UserSession.NeosUserSession;
   overrideBaseUrl?: string;
 }) {
   await httpDelete(
@@ -34,7 +32,7 @@ export async function apiDeleteUserSession({
       userSession.token
     }`,
     {
-      headers: getAuthHeader(userSession),
+      headers: NeosUtil.UserSession.getAuthHeader(userSession),
     }
   );
 }

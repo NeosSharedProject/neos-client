@@ -5,14 +5,9 @@ import {
   LogLevel,
 } from "@microsoft/signalr";
 import { BASE_URL, post } from "../common";
-import { NeosUserSessionType } from "../type/userSession";
 import { parseNeosMessage } from "../util/message";
-import { getAuthHeader } from "../util/userSession";
-import {
-  EventCallbackListType,
-  MessagesReadEventArgumentType,
-} from "../type/hub";
-import { NeosMessageType } from "../type/message";
+import * as NeosUtil from "../util";
+import * as NeosType from "../type";
 
 export type NeosHubNegotiation = {
   negotiateVersion: number;
@@ -25,14 +20,14 @@ export async function apiNegotiateHub({
   userSession,
   overrideBaseUrl,
 }: {
-  userSession: NeosUserSessionType;
+  userSession: NeosType.UserSession.NeosUserSession;
   overrideBaseUrl?: string;
 }): Promise<NeosHubNegotiation> {
   return (
     await post(
       `${overrideBaseUrl ?? BASE_URL}hub/negotiate`,
       {},
-      { headers: getAuthHeader(userSession) }
+      { headers: NeosUtil.UserSession.getAuthHeader(userSession) }
     )
   ).data;
 }
@@ -43,8 +38,8 @@ export async function apiConnectHub({
   overrideBaseUrl,
   overrideHubUrl,
 }: {
-  userSession: NeosUserSessionType;
-  eventCallbacks?: EventCallbackListType;
+  userSession: NeosType.UserSession.NeosUserSession;
+  eventCallbacks?: NeosType.Hub.EventCallbackList;
   overrideBaseUrl?: string;
   overrideHubUrl?: string;
 }): Promise<HubConnection> {
@@ -89,7 +84,7 @@ export async function sendMessageHub({
   message,
 }: {
   connection: HubConnection;
-  message: NeosMessageType;
+  message: NeosType.Message.Message;
 }) {
   await connection.send("SendMessage", message);
 }
@@ -99,7 +94,7 @@ export async function markMessageReadHub({
   markReadBatch,
 }: {
   connection: HubConnection;
-  markReadBatch: MessagesReadEventArgumentType;
+  markReadBatch: NeosType.Hub.MessagesReadEventArgument;
 }) {
   await connection.send("MarkMessagesRead", markReadBatch);
 }

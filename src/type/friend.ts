@@ -1,14 +1,12 @@
-import { NeosDateStringType, NeosUriType } from "./common";
-import { NeosUserIdType } from "./id";
-import { NeosUserStatusType } from "./user";
+import * as NeosType from "./index";
 
-export type NeosFriendType = {
-  id: NeosUserIdType;
+export type NeosFriend = {
+  id: NeosType.Id.NeosUserId;
   friendUsername: string;
   friendStatus: "Accepted" | "Requested" | "None";
   isAccepted: boolean;
-  userStatus: NeosUserStatusType;
-  profile: { iconUrl?: NeosUriType };
-  latestMessageTime: NeosDateStringType;
-  ownerId: NeosUserIdType;
+  userStatus: NeosType.User.NeosUserStatus;
+  profile: { iconUrl?: NeosType.Common.NeosUri };
+  latestMessageTime: NeosType.Common.NeosDateString;
+  ownerId: NeosType.Id.NeosUserId;
 };
