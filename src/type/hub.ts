@@ -11,10 +11,10 @@ export type MessagesReadEventArgument = {
 export type EventCallbackList = (
   | {
       methodName: "ReceiveMessage";
-      callback: (data: ReceiveMessageEventArgument) => any;
+      callback: (data: ReceiveMessageEventArgument) => unknown;
     }
   | {
       methodName: "MessagesRead";
-      callback: (data: MessagesReadEventArgument) => any;
+      callback: (data: MessagesReadEventArgument) => unknown;
     }
 )[];

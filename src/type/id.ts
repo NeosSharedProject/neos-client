@@ -1,4 +1,4 @@
-export type NeosId<T extends string> = `${T}-${string}`;
+export type NeosId<T extends string> = string; //`${T}-${string}`;
 
 export type NeosUserId = NeosId<"U">;
 

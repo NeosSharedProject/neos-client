@@ -62,7 +62,7 @@ export async function apiPutUserStatus({
   overrideBaseUrl,
 }: {
   userSession: NeosType.UserSession.NeosUserSession;
-  status: NeosType.User.NeosUserStatus;
+  status: NeosType.User.NeosUserStatusInput;
   overrideBaseUrl?: string;
 }): Promise<void> {
   await put(

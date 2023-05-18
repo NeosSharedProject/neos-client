@@ -1,5 +1,17 @@
 import * as NeosType from "./index";
 
+export type NeosUserStatusInput = {
+  onlineStatus: "Online" | "Busy" | "Away" | "Offline";
+  currentSessionAccessLevel?: number;
+  currentSessionHidden?: boolean;
+  currentHosting?: boolean;
+  neosVersion?: string;
+  compatibilityHash?: string;
+  outputDevice?: "Unknown" | "VR" | "Screen" | "Headless";
+  isMobile?: false;
+  activeSessions?: NeosType.Common.NeosUri[];
+};
+
 //TODO どんな値があるか調査して書く。
 export type NeosUserStatus =
   | {
@@ -15,12 +27,12 @@ export type NeosUserStatus =
       onlineStatus: "Away";
       lastStatusChange: NeosType.Common.NeosDateString;
       currentSessionId: NeosType.Id.NeosSessionId;
-      currentSessionAccessLevel: 0 | 2 | 3 | 4 | 5 | 6;
+      currentSessionAccessLevel: number; //0 | 2 | 3 | 4 | 5 | 6;
       currentSessionHidden: boolean;
       currentHosting: boolean;
       compatibilityHash: string;
       neosVersion: NeosType.Common.NeosVersion;
-      publicRSAKey: [Object];
+      publicRSAKey: { Exponent: string; Modulus: string };
       outputDevice: "Unknown" | "VR" | "Screen" | "Headless";
       isMobile: boolean;
       activeSessions: NeosType.Session.NeosSession[];
@@ -29,12 +41,12 @@ export type NeosUserStatus =
       onlineStatus: "Online";
       lastStatusChange: NeosType.Common.NeosDateString;
       currentSessionId: NeosType.Id.NeosSessionId;
-      currentSessionAccessLevel: 0 | 2 | 3 | 4 | 5 | 6;
+      currentSessionAccessLevel: number; //0 | 2 | 3 | 4 | 5 | 6;
       currentSessionHidden: boolean;
       currentHosting: boolean;
       compatibilityHash: string;
       neosVersion: NeosType.Common.NeosVersion;
-      publicRSAKey: [Object];
+      publicRSAKey: { Exponent: string; Modulus: string };
       outputDevice: "Unknown" | "VR" | "Screen" | "Headless";
       isMobile: boolean;
       currentSession: NeosType.Session.NeosSession;
