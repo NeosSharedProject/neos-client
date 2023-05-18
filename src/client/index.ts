@@ -1,4 +1,5 @@
 import { uuidv4 } from "../common";
+import * as NeosType from "../type";
 import { EventManager, EventType } from "./eventManager";
 import { addFriend } from "./functions/addFriend";
 import { getFriends } from "./functions/getFriends";
@@ -10,7 +11,10 @@ import { login } from "./functions/login";
 import { logout } from "./functions/logout";
 import { checkSession } from "./functions/checkSession";
 import { sendKFC } from "./functions/sendKFC";
-import * as NeosType from "../type";
+import { updateUserStatus } from "./functions/updateUserStatus";
+import { getRecord } from "./functions/getRecord";
+import { getRecordFromPath } from "./functions/getRecordFromPath";
+import { apiGetRecordsFromPath } from "./functions/getRecordsFromPath";
 
 export type NeosClientOption = {
   saveLoginCredential: boolean;
@@ -65,9 +69,13 @@ export class Neos {
   getFriends = getFriends;
   getMessages = getMessages;
   getUser = getUser;
+  updateUserStatus = updateUserStatus;
   readMessage = readMessages;
   sendTextMessage = sendTextMessage;
   sendKFC = sendKFC;
+  getRecord = getRecord;
+  getRecordFromPath = getRecordFromPath;
+  getRecordsFromPath = apiGetRecordsFromPath;
 
   on(...[eventName, listener]: EventType) {
     this.eventManager?.on(eventName, listener);
