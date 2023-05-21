@@ -3,13 +3,13 @@ import * as NeosUtil from "../util";
 
 import * as NeosType from "../type";
 
-export async function apiGetSessions({
+export const apiGetSessions = async ({
   userSession,
   overrideBaseUrl,
 }: {
   userSession?: NeosType.UserSession.NeosUserSession;
   overrideBaseUrl?: string;
-}): Promise<NeosType.Session.NeosSession[]> {
+}): Promise<NeosType.Session.NeosSession[]> => {
   const response = await get(
     `${overrideBaseUrl ?? BASE_URL}api/sessions`,
     userSession
@@ -17,4 +17,4 @@ export async function apiGetSessions({
       : {}
   );
   return response.data;
-}
+};

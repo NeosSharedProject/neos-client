@@ -2,13 +2,13 @@ import { BASE_URL, get, put } from "../common";
 import * as NeosUtil from "../util";
 import * as NeosType from "../type";
 
-export async function apiGetFriends({
+export const apiGetFriends = async ({
   userSession,
   overrideBaseUrl,
 }: {
   userSession: NeosType.UserSession.NeosUserSession;
   overrideBaseUrl?: string;
-}): Promise<NeosType.Friend.NeosFriend[]> {
+}): Promise<NeosType.Friend.NeosFriend[]> => {
   const response = await get(
     `${overrideBaseUrl ?? BASE_URL}api/users/${userSession.userId}/friends`,
     {
@@ -16,9 +16,9 @@ export async function apiGetFriends({
     }
   );
   return response.data;
-}
+};
 
-export async function apiAddFriend({
+export const apiAddFriend = async ({
   userSession,
   targetUserId,
   overrideBaseUrl,
@@ -26,7 +26,7 @@ export async function apiAddFriend({
   userSession: NeosType.UserSession.NeosUserSession;
   targetUserId: string;
   overrideBaseUrl?: string;
-}) {
+}) => {
   const response = await put(
     `${overrideBaseUrl ?? BASE_URL}api/users/${
       userSession.userId
@@ -37,4 +37,4 @@ export async function apiAddFriend({
     }
   );
   return response.data;
-}
+};

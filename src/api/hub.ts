@@ -16,13 +16,13 @@ export type NeosHubNegotiation = {
   availableTransports: any[];
 };
 
-export async function apiNegotiateHub({
+export const apiNegotiateHub = async ({
   userSession,
   overrideBaseUrl,
 }: {
   userSession: NeosType.UserSession.NeosUserSession;
   overrideBaseUrl?: string;
-}): Promise<NeosHubNegotiation> {
+}): Promise<NeosHubNegotiation> => {
   return (
     await post(
       `${overrideBaseUrl ?? BASE_URL}hub/negotiate`,
@@ -30,9 +30,9 @@ export async function apiNegotiateHub({
       { headers: NeosUtil.UserSession.getAuthHeader(userSession) }
     )
   ).data;
-}
+};
 
-export async function apiConnectHub({
+export const apiConnectHub = async ({
   userSession,
   eventCallbacks,
   overrideBaseUrl,
@@ -42,7 +42,7 @@ export async function apiConnectHub({
   eventCallbacks?: NeosType.Hub.EventCallbackList;
   overrideBaseUrl?: string;
   overrideHubUrl?: string;
-}): Promise<HubConnection> {
+}): Promise<HubConnection> => {
   const data = await apiNegotiateHub({ userSession, overrideBaseUrl });
 
   const connection = new HubConnectionBuilder()
@@ -77,24 +77,24 @@ export async function apiConnectHub({
   connection.start();
 
   return connection;
-}
+};
 
-export async function sendMessageHub({
+export const sendMessageHub = async ({
   connection,
   message,
 }: {
   connection: HubConnection;
   message: NeosType.Message.Message;
-}) {
+}) => {
   await connection.send("SendMessage", message);
-}
+};
 
-export async function markMessageReadHub({
+export const markMessageReadHub = async ({
   connection,
   markReadBatch,
 }: {
   connection: HubConnection;
   markReadBatch: NeosType.Hub.MessagesReadEventArgument;
-}) {
+}) => {
   await connection.send("MarkMessagesRead", markReadBatch);
-}
+};

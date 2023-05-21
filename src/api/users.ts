@@ -2,7 +2,7 @@ import { BASE_URL, get, put } from "../common";
 import * as NeosUtil from "../util";
 import * as NeosType from "../type";
 
-export async function apiGetUser({
+export const apiGetUser = async ({
   userSession,
   targetUserId,
   overrideBaseUrl,
@@ -10,7 +10,7 @@ export async function apiGetUser({
   userSession?: NeosType.UserSession.NeosUserSession;
   targetUserId: string;
   overrideBaseUrl?: string;
-}): Promise<NeosType.User.NeosUser> {
+}): Promise<NeosType.User.NeosUser> => {
   const response = await get(
     `${overrideBaseUrl ?? BASE_URL}api/users/${targetUserId}`,
     userSession
@@ -18,9 +18,9 @@ export async function apiGetUser({
       : {}
   );
   return response.data;
-}
+};
 
-export async function apiFindUsers({
+export const apiFindUsers = async ({
   userSession,
   keyword,
   overrideBaseUrl,
@@ -28,7 +28,7 @@ export async function apiFindUsers({
   userSession?: NeosType.UserSession.NeosUserSession;
   keyword: string;
   overrideBaseUrl?: string;
-}): Promise<NeosType.User.NeosUser[]> {
+}): Promise<NeosType.User.NeosUser[]> => {
   const response = await get(
     `${overrideBaseUrl ?? BASE_URL}api/users?name=${keyword}`,
     userSession
@@ -36,9 +36,9 @@ export async function apiFindUsers({
       : {}
   );
   return response.data;
-}
+};
 
-export async function apiGetUserStatus({
+export const apiGetUserStatus = async ({
   userSession,
   targetUserId,
   overrideBaseUrl,
@@ -46,7 +46,7 @@ export async function apiGetUserStatus({
   userSession?: NeosType.UserSession.NeosUserSession;
   targetUserId: NeosType.Id.NeosUserId;
   overrideBaseUrl?: string;
-}): Promise<NeosType.User.NeosUserStatus> {
+}): Promise<NeosType.User.NeosUserStatus> => {
   const response = await get(
     `${overrideBaseUrl ?? BASE_URL}api/users/${targetUserId}/status`,
     userSession
@@ -54,9 +54,9 @@ export async function apiGetUserStatus({
       : {}
   );
   return response.data;
-}
+};
 
-export async function apiPutUserStatus({
+export const apiPutUserStatus = async ({
   userSession,
   status,
   overrideBaseUrl,
@@ -64,7 +64,7 @@ export async function apiPutUserStatus({
   userSession: NeosType.UserSession.NeosUserSession;
   status: NeosType.User.NeosUserStatusInput;
   overrideBaseUrl?: string;
-}): Promise<void> {
+}): Promise<void> => {
   await put(
     `${overrideBaseUrl ?? BASE_URL}api/users/${userSession.userId}/status`,
     status,
@@ -72,4 +72,4 @@ export async function apiPutUserStatus({
       headers: NeosUtil.UserSession.getAuthHeader(userSession),
     }
   );
-}
+};

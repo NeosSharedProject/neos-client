@@ -2,7 +2,7 @@ import { BASE_URL, get } from "../common";
 import * as NeosUtil from "../util";
 import * as NeosType from "../type";
 
-export async function apiGetRecord({
+export const apiGetRecord = async ({
   userSession,
   overrideBaseUrl,
   ownerId,
@@ -12,7 +12,7 @@ export async function apiGetRecord({
   overrideBaseUrl?: string;
   ownerId: string;
   recordId: string;
-}): Promise<NeosType.Record.NeosRecord> {
+}): Promise<NeosType.Record.NeosRecord> => {
   const response = await get(
     `${overrideBaseUrl ?? BASE_URL}api/users/${ownerId}/records/${recordId}`,
     userSession
@@ -20,9 +20,9 @@ export async function apiGetRecord({
       : {}
   );
   return response.data;
-}
+};
 
-export async function apiGetRecordFromPath({
+export const apiGetRecordFromPath = async ({
   userSession,
   overrideBaseUrl,
   ownerId,
@@ -32,7 +32,7 @@ export async function apiGetRecordFromPath({
   overrideBaseUrl?: string;
   ownerId: string;
   path: string;
-}): Promise<NeosType.Record.NeosRecord> {
+}): Promise<NeosType.Record.NeosRecord> => {
   const ownerType = NeosUtil.Common.resolveOwnerType(ownerId);
   if (!ownerType) {
     throw new Error(`invalid ownerId.ownerId=${ownerId}`);
@@ -46,9 +46,9 @@ export async function apiGetRecordFromPath({
       : {}
   );
   return response.data;
-}
+};
 
-export async function apiGetRecordsFromPath({
+export const apiGetRecordsFromPath = async ({
   userSession,
   overrideBaseUrl,
   ownerId,
@@ -58,7 +58,7 @@ export async function apiGetRecordsFromPath({
   overrideBaseUrl?: string;
   ownerId: string;
   path: string;
-}): Promise<NeosType.Record.NeosRecord[]> {
+}): Promise<NeosType.Record.NeosRecord[]> => {
   const ownerType = NeosUtil.Common.resolveOwnerType(ownerId);
   if (!ownerType) {
     throw new Error(`invalid ownerId.ownerId=${ownerId}`);
@@ -72,4 +72,4 @@ export async function apiGetRecordsFromPath({
       : {}
   );
   return response.data;
-}
+};

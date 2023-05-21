@@ -1,14 +1,14 @@
 import * as NeosType from "../type";
 
-export function getAuthHeader(
+export const getAuthHeader = (
   userSession: NeosType.UserSession.NeosUserSession
-) {
+) => {
   return {
     Authorization: `neos ${userSession.userId}:${userSession.token}`,
   };
-}
+};
 
-export function isPasswordCredential(
+export const isPasswordCredential = (
   loginCredential: NeosType.UserSession.NeosLoginCredential
 ): loginCredential is
   | {
@@ -28,6 +28,6 @@ export function isPasswordCredential(
       password: string;
       rememberMe?: boolean;
       secretMachineId?: string;
-    } {
+    } => {
   return "password" in loginCredential;
-}
+};

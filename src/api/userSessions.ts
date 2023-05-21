@@ -3,13 +3,13 @@ import * as NeosUtil from "../util";
 
 import * as NeosType from "../type";
 
-export async function apiPostUserSession({
+export const apiPostUserSession = async ({
   loginCredential,
   overrideBaseUrl,
 }: {
   loginCredential: NeosType.UserSession.NeosLoginCredential;
   overrideBaseUrl?: string;
-}): Promise<NeosType.UserSession.NeosUserSession> {
+}): Promise<NeosType.UserSession.NeosUserSession> => {
   const response = await post(
     `${overrideBaseUrl ?? BASE_URL}api/userSessions`,
     loginCredential
@@ -18,15 +18,15 @@ export async function apiPostUserSession({
     throw new Error("postUserSession error");
   }
   return response.data;
-}
+};
 
-export async function apiDeleteUserSession({
+export const apiDeleteUserSession = async ({
   userSession,
   overrideBaseUrl,
 }: {
   userSession: NeosType.UserSession.NeosUserSession;
   overrideBaseUrl?: string;
-}) {
+}) => {
   await httpDelete(
     `${overrideBaseUrl ?? BASE_URL}api/userSessions/${userSession.userId}/${
       userSession.token
@@ -35,4 +35,4 @@ export async function apiDeleteUserSession({
       headers: NeosUtil.UserSession.getAuthHeader(userSession),
     }
   );
-}
+};
