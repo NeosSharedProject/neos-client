@@ -13,8 +13,14 @@ export const apiGetRecord = async ({
   ownerId: string;
   recordId: string;
 }): Promise<NeosType.Record.NeosRecord> => {
+  const ownerType = NeosUtil.Common.resolveOwnerType(ownerId);
+  if (!ownerType) {
+    throw new Error(`invalid ownerId.ownerId=${ownerId}`);
+  }
   const response = await get(
-    `${overrideBaseUrl ?? BASE_URL}api/users/${ownerId}/records/${recordId}`,
+    `${
+      overrideBaseUrl ?? BASE_URL
+    }api/${ownerType}/${ownerId}/records/${recordId}`,
     userSession
       ? { headers: NeosUtil.UserSession.getAuthHeader(userSession) }
       : {}
