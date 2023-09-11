@@ -1,11 +1,11 @@
-export function escapeTagString(str: string) {
+export const escapeTagString = (str: string): string => {
   return str.replace(
     /<align=(left|center|right)>|<\/align>|<color=[^<>]*>|<\/color>|<b>|<\/b>|<i>|<\/i>|<lowercase>|<\/lowercase>|<uppercase>|<\/uppercase>|<smallcaps>|<\/smallcaps>|<mark=[^<>]>|<\/mark>|<noparse>|<\/noparse>|<nobr>|<\/nobr>|<size=[^<>]*>|<\/size>|<s>|<\/s>|<u>|<\/u>|<sub>|<\/sub>|<sup>|<\/sup>/g,
     ""
   );
-}
+};
 
-export function neosdb2https(neosdbUrl: string): string | undefined {
+export const neosdb2https = (neosdbUrl: string): string | undefined => {
   if (!neosdbUrl) {
     return undefined;
   }
@@ -19,11 +19,11 @@ export function neosdb2https(neosdbUrl: string): string | undefined {
   } else {
     return `https://cloudxstorage.blob.core.windows.net/assets/${sl1[0]}`;
   }
-}
+};
 
-export function resolveOwnerType(
+export const resolveOwnerType = (
   ownerId: string
-): "users" | "groups" | undefined {
+): "users" | "groups" | undefined => {
   switch (ownerId.slice(0, 2)) {
     case "U-":
       return "users";
@@ -32,4 +32,4 @@ export function resolveOwnerType(
     default:
       return undefined;
   }
-}
+};

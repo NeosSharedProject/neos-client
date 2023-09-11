@@ -1,47 +1,47 @@
 import { uuidv4 } from "../common";
 import * as NeosType from "../type";
 
-function safeJsonParse<T>(str: string): T | string {
+const safeJsonParse = <T>(str: string): T | string => {
   try {
     return JSON.parse(str);
   } catch (e) {
     return str;
   }
-}
+};
 
-export function getObjectMessageContent(
+export const getObjectMessageContent = (
   message: NeosType.Message.NeosObjectMessage
-): NeosType.Message.ObjectMessageContent {
+): NeosType.Message.ObjectMessageContent => {
   return safeJsonParse(
     message.content
   ) as NeosType.Message.ObjectMessageContent;
-}
+};
 
-export function getCreditTransferMessageContent(
+export const getCreditTransferMessageContent = (
   message: NeosType.Message.NeosCreditTransferMessage
-): NeosType.Message.CreditTransferMessageContent {
+): NeosType.Message.CreditTransferMessageContent => {
   return safeJsonParse(
     message.content
   ) as NeosType.Message.CreditTransferMessageContent;
-}
+};
 
-export function getSessionInviteMessageContent(
+export const getSessionInviteMessageContent = (
   message: NeosType.Message.NeosSessionInviteMessage
-): NeosType.Message.SessionInviteMessageContent {
+): NeosType.Message.SessionInviteMessageContent => {
   return safeJsonParse(
     message.content
   ) as NeosType.Message.SessionInviteMessageContent;
-}
+};
 
-export function getSoundMessageContent(
+export const getSoundMessageContent = (
   message: NeosType.Message.NeosSoundMessage
-): NeosType.Message.SoundMessageContent {
+): NeosType.Message.SoundMessageContent => {
   return safeJsonParse(message.content) as NeosType.Message.SoundMessageContent;
-}
+};
 
-export function parseNeosMessage(
+export const parseNeosMessage = (
   message: NeosType.Message.NeosMessage
-): NeosType.Message.Message {
+): NeosType.Message.Message => {
   const messageType = message.messageType;
   switch (messageType) {
     case "Text":
@@ -69,9 +69,9 @@ export function parseNeosMessage(
       console.error(`unknown messageType. messageType=${messageType}`);
       return message;
   }
-}
+};
 
-export function generateTextMessage({
+export const generateTextMessage = ({
   targetUserId,
   senderUserId,
   content,
@@ -79,7 +79,7 @@ export function generateTextMessage({
   targetUserId: NeosType.Id.NeosUserId;
   senderUserId: NeosType.Id.NeosUserId;
   content: string;
-}): NeosType.Message.TextMessage {
+}): NeosType.Message.TextMessage => {
   return {
     id: `MSG-${uuidv4()}`,
     senderId: senderUserId,
@@ -91,4 +91,4 @@ export function generateTextMessage({
     readTime: null,
     ownerId: senderUserId,
   };
-}
+};

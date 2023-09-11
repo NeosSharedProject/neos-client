@@ -3,7 +3,7 @@ import { generateTextMessage, parseNeosMessage } from "../util/message";
 import * as NeosUtil from "../util";
 import * as NeosType from "../type";
 
-export async function apiGetMessages({
+export const apiGetMessages = async ({
   userSession,
   targetUserId,
   unReadOnly = false,
@@ -15,7 +15,7 @@ export async function apiGetMessages({
   unReadOnly?: boolean;
   fromTime?: Date;
   overrideBaseUrl?: string;
-}): Promise<NeosType.Message.Message[]> {
+}): Promise<NeosType.Message.Message[]> => {
   const res = await get(
     `${overrideBaseUrl ?? BASE_URL}api/users/${userSession.userId}/messages?${
       targetUserId ? `user=${targetUserId}&` : ""
@@ -27,9 +27,9 @@ export async function apiGetMessages({
   return res.data.map((message: NeosType.Message.NeosMessage) =>
     parseNeosMessage(message)
   );
-}
+};
 
-export async function apiSendTextMessage({
+export const apiSendTextMessage = async ({
   userSession,
   targetUserId,
   message,
@@ -39,7 +39,7 @@ export async function apiSendTextMessage({
   targetUserId: NeosType.Id.NeosUserId;
   message: string;
   overrideBaseUrl?: string;
-}): Promise<NeosType.Message.TextMessage> {
+}): Promise<NeosType.Message.TextMessage> => {
   const body = generateTextMessage({
     targetUserId,
     senderUserId: userSession.userId,
@@ -53,9 +53,9 @@ export async function apiSendTextMessage({
     }
   );
   return body;
-}
+};
 
-export async function apiMarkMessageRead({
+export const apiMarkMessageRead = async ({
   messageIds,
   userSession,
   overrideBaseUrl,
@@ -63,16 +63,16 @@ export async function apiMarkMessageRead({
   messageIds: NeosType.Id.NeosMessageId[];
   userSession: NeosType.UserSession.NeosUserSession;
   overrideBaseUrl?: string;
-}): Promise<NeosType.Id.NeosMessageId[]> {
+}): Promise<NeosType.Id.NeosMessageId[]> => {
   await patch(
     `${overrideBaseUrl ?? BASE_URL}api/users/${userSession.userId}/messages/`,
     messageIds,
     { headers: NeosUtil.UserSession.getAuthHeader(userSession) }
   );
   return messageIds;
-}
+};
 
-export async function apiSendKFC({
+export const apiSendKFC = async ({
   userSession,
   targetUserId,
   amount,
@@ -86,7 +86,7 @@ export async function apiSendKFC({
   comment?: string;
   totp?: string;
   overrideBaseUrl?: string;
-}) {
+}) => {
   return await post(
     `${overrideBaseUrl ?? BASE_URL}api/transactions/KFC`,
     {
@@ -105,4 +105,4 @@ export async function apiSendKFC({
       },
     }
   );
-}
+};

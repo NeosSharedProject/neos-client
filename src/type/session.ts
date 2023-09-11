@@ -4,7 +4,7 @@ export type NeosSessionUser = {
   username: string;
   userID: NeosType.Id.NeosUserId;
   isPresent: boolean;
-  outputDevice: 2 | 3;
+  outputDevice: number;
 };
 
 export type NeosSession = {
@@ -33,7 +33,13 @@ export type NeosSession = {
   mobileFriendly: boolean;
   sessionBeginTime: NeosType.Common.NeosDateString;
   lastUpdate: NeosType.Common.NeosDateString;
-  accessLevel: "FriendsOfFriends";
+  accessLevel:
+    | "Anyone"
+    | "RegisteredUsers"
+    | "FriendsOfFriends"
+    | "Friends"
+    | "Private"
+    | "InviteOnly";
   hasEnded: boolean;
   isValid: boolean;
 };

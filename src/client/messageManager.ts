@@ -27,6 +27,16 @@ export class MessageManager {
     }
   }
 
+  _removeLocalMessage({
+    messageId,
+  }: {
+    messageId: NeosType.Message.Message["id"];
+  }) {
+    this.localMessages = this.localMessages?.filter(
+      (message) => message.id !== messageId
+    );
+  }
+
   _readLocalMessages({
     messageIds,
     readTime,
@@ -49,11 +59,15 @@ export class MessageManager {
   }: {
     userSession: NeosType.UserSession.NeosUserSession;
   }): Promise<void> {
-    this.localMessages = await apiGetMessages({
-      userSession,
-      overrideBaseUrl: this.eventManager.neos.overrideBaseUrl,
-    });
-    this.eventManager.emit("MessagesUpdated", this.localMessages);
+    try {
+      this.localMessages = await apiGetMessages({
+        userSession,
+        overrideBaseUrl: this.eventManager.neos.overrideBaseUrl,
+      });
+      this.eventManager.emit("MessagesUpdated", this.localMessages);
+    } catch (e) {
+      console.error(`Failed to sync messages: ${e}`);
+    }
   }
 
   public async syncUserMessages({
@@ -65,15 +79,19 @@ export class MessageManager {
     targetUserId: NeosType.Id.NeosUserId;
     fromTime?: Date;
   }) {
-    const userMessages = await apiGetMessages({
-      userSession,
-      targetUserId,
-      fromTime,
-      overrideBaseUrl: this.eventManager.neos.overrideBaseUrl,
-    });
-    userMessages.forEach((message) => {
-      this._addLocalMessage({ message });
-    });
+    try {
+      const userMessages = await apiGetMessages({
+        userSession,
+        targetUserId,
+        fromTime,
+        overrideBaseUrl: this.eventManager.neos.overrideBaseUrl,
+      });
+      userMessages.forEach((message) => {
+        this._addLocalMessage({ message });
+      });
+    } catch (e) {
+      console.error(`Failed to sync user messages: ${e}`);
+    }
   }
 
   public async sendTextMessage({
@@ -92,10 +110,16 @@ export class MessageManager {
         senderUserId: userSession.userId,
         content: message,
       });
-      await sendMessageHub({
-        connection: this.eventManager.hubConnection,
-        message: msg,
-      });
+      this._addLocalMessage({ message: msg });
+      try {
+        await sendMessageHub({
+          connection: this.eventManager.hubConnection,
+          message: msg,
+        });
+      } catch (e) {
+        this._removeLocalMessage({ messageId: msg.id });
+        throw e;
+      }
     } else {
       msg = await apiSendTextMessage({
         userSession,
@@ -103,8 +127,8 @@ export class MessageManager {
         message,
         overrideBaseUrl: this.eventManager.neos.overrideBaseUrl,
       });
+      this._addLocalMessage({ message: msg });
     }
-    this._addLocalMessage({ message: msg });
     return msg;
   }
 
