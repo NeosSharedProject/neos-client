@@ -18,14 +18,13 @@ import { getRecordsFromPath } from "./functions/getRecordsFromPath";
 import { getCloudVariableValue } from "./functions/getCloudVariableValue";
 import { setCloudVariableValue } from "./functions/setCloudVariableValue";
 
-export type NeosClientOption = {
+type NeosClientOption = {
   saveLoginCredential: boolean;
+  useEvents: boolean;
+  autoSync: boolean;
   overrideBaseUrl?: string;
   overrideHubUrl?: string;
-} & (
-  | { useEvents: false; autoSync: false }
-  | { useEvents: true; autoSync: boolean }
-);
+};
 
 export class Neos {
   loginCredential: NeosType.UserSession.NeosLoginCredential & {
@@ -41,18 +40,21 @@ export class Neos {
 
   constructor(
     loginCredential: NeosType.UserSession.NeosLoginCredential,
-    option?: NeosClientOption
+    option?: Partial<NeosClientOption>
   ) {
     this.loginCredential = {
       secretMachineId: uuidv4(),
       ...loginCredential,
       rememberMe: true,
     };
-    this.option = option ?? {
+
+    this.option = {
       saveLoginCredential: false,
       useEvents: true,
-      autoSync: true,
+      ...(option ?? {}),
+      autoSync: option?.useEvents ?? true ? option?.autoSync ?? false : false,
     };
+
     this.overrideBaseUrl = option?.overrideBaseUrl;
     this.overrideHubUrl = option?.overrideHubUrl;
 
