@@ -14,7 +14,9 @@ import { sendKFC } from "./functions/sendKFC";
 import { updateUserStatus } from "./functions/updateUserStatus";
 import { getRecord } from "./functions/getRecord";
 import { getRecordFromPath } from "./functions/getRecordFromPath";
-import { apiGetRecordsFromPath } from "./functions/getRecordsFromPath";
+import { getRecordsFromPath } from "./functions/getRecordsFromPath";
+import { getCloudVariableValue } from "./functions/getCloudVariableValue";
+import { setCloudVariableValue } from "./functions/setCloudVariableValue";
 
 export type NeosClientOption = {
   saveLoginCredential: boolean;
@@ -75,7 +77,9 @@ export class Neos {
   sendKFC = sendKFC;
   getRecord = getRecord;
   getRecordFromPath = getRecordFromPath;
-  getRecordsFromPath = apiGetRecordsFromPath;
+  getRecordsFromPath = getRecordsFromPath;
+  getCloudVariableValue = getCloudVariableValue;
+  setCloudVariableValue = setCloudVariableValue;
 
   on(...[eventName, listener]: EventType) {
     this.eventManager?.on(eventName, listener);

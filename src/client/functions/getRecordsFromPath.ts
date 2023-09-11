@@ -2,7 +2,7 @@ import { Neos } from "..";
 import * as NeosAPI from "../../api";
 import * as NeosType from "../../type";
 
-export async function apiGetRecordsFromPath(
+export async function getRecordsFromPath(
   this: Neos,
   { ownerId, path }: { ownerId: string; path: string }
 ): Promise<NeosType.Record.NeosRecord[]> {
