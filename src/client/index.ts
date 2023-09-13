@@ -52,7 +52,7 @@ export class Neos {
       saveLoginCredential: false,
       useEvents: true,
       ...(option ?? {}),
-      autoSync: option?.useEvents ?? true ? option?.autoSync ?? false : false,
+      autoSync: option?.useEvents ?? true ? option?.autoSync ?? true : false,
     };
 
     this.overrideBaseUrl = option?.overrideBaseUrl;
